@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from '../utils/axiosConfig';
+import { registerUser } from '../services/userServices';
 
 const RegisterForm: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -29,13 +29,8 @@ const RegisterForm: React.FC = () => {
         }
 
         try {
-            const response = await axios.post('/usuarios', {
-                username,
-                email,
-                password,
-            });
-
-            setSuccess(response.data.message);
+            const data = await registerUser({ username, email, password });
+            setSuccess(data.message);
             setError(null);
         } catch (err: any) {
             if (err.response && err.response.data) {
