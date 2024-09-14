@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { registerUser } from '../services/userServices';
+import styled from 'styled-components';
 
 const RegisterForm: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -43,12 +44,12 @@ const RegisterForm: React.FC = () => {
     };
 
     return (
-        <div>
+        <FormContainer>
             <h2>Registro de Usuario</h2>
-            <form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit}>
                 <div>
-                    <label htmlFor="username">Nombre de usuario:</label>
-                    <input
+                    <Label htmlFor="username">Nombre de usuario:</Label>
+                    <Input
                         type="text"
                         id="username"
                         value={username}
@@ -56,8 +57,8 @@ const RegisterForm: React.FC = () => {
                     />
                 </div>
                 <div>
-                    <label htmlFor="email">Correo electrónico:</label>
-                    <input
+                    <Label htmlFor="email">Correo electrónico:</Label>
+                    <Input
                         type="email"
                         id="email"
                         value={email}
@@ -65,20 +66,75 @@ const RegisterForm: React.FC = () => {
                     />
                 </div>
                 <div>
-                    <label htmlFor="password">Contraseña:</label>
-                    <input
+                    <Label htmlFor="password">Contraseña:</Label>
+                    <Input
                         type="password"
                         id="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
                 </div>
-                <button type="submit">Registrarse</button>
-            </form>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {success && <p style={{ color: 'green' }}>{success}</p>}
-        </div>
+                <Button type="submit">Registrarse</Button>
+            </Form>
+            {error && <Message>{error}</Message>}
+            {success && <Message success>{success}</Message>}
+        </FormContainer>
     );
 };
+
+
+// Definir los estilos usando styled-components
+const FormContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #ffffff;
+    font-family: 'Press Start 2P', cursive;
+`;
+
+const Form = styled.form`
+    max-width: 400px;
+    padding: 20px;
+    background-color: #3c3c3c;
+    border: 4px solid #000000;
+    box-shadow: 5px 5px #000000;
+`;
+
+const Label = styled.label`
+    display: block;
+    margin-bottom: 5px;
+    font-size: 16px;
+`;
+
+const Input = styled.input`
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 3px solid #000000;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    box-shadow: 2px 2px #000000;
+    font-family: 'VT323', monospace;
+`;
+
+const Button = styled.button`
+    background-color: #1b9aaa;
+    color: #ffffff;
+    border: 3px solid #000000;
+    padding: 10px 20px;
+    font-family: 'Press Start 2P', cursive;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    box-shadow: 2px 2px #000000;
+
+    &:hover {
+        background-color: #0d6d8c;
+    }
+`;
+
+const Message = styled.p<{ success?: boolean }>`
+    color: ${(props) => (props.success ? '#3be13b' : '#ff0d72')};
+`;
+
 
 export default RegisterForm;
