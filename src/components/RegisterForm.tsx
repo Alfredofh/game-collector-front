@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { registerUser } from '../services/userServices';
 import styled from 'styled-components';
-import GlobalStyles from '../styles/GlobalStyles';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 const RegisterForm: React.FC = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
 
@@ -46,7 +47,7 @@ const RegisterForm: React.FC = () => {
 
     return (
         <FormContainer>
-            <h2>User Register</h2>
+            <h2>User Registration</h2>
             <Form onSubmit={handleSubmit}>
                 <div>
                     <Label htmlFor="username">Username:</Label>
@@ -68,12 +69,20 @@ const RegisterForm: React.FC = () => {
                 </div>
                 <div>
                     <Label htmlFor="password">Password:</Label>
-                    <Input
-                        type="password"
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
+                    <InputContainer>
+                        <Input
+                            type={showPassword ? "text" : "password"}
+                            id="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                        <TogglePasswordButton
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                            <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                        </TogglePasswordButton>
+                    </InputContainer>
                 </div>
                 <Button type="submit">Register</Button>
             </Form>
@@ -105,6 +114,10 @@ const Label = styled.label`
     font-size: 16px;
 `;
 
+const InputContainer = styled.div`
+    position: relative;
+`;
+
 const Input = styled.input`
     width: 100%;
     padding: 10px;
@@ -114,6 +127,17 @@ const Input = styled.input`
     color: #ffffff;
     box-shadow: 2px 2px #000000;
     font-family: 'Roboto Mono', monospace; /* Usar fuente monospace para inputs */
+`;
+
+const TogglePasswordButton = styled.button`
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
 `;
 
 const Button = styled.button`
