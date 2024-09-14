@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { registerUser } from '../services/userServices';
 import styled from 'styled-components';
+import GlobalStyles from '../styles/GlobalStyles';
 
 const RegisterForm: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -82,14 +83,12 @@ const RegisterForm: React.FC = () => {
     );
 };
 
-
-// Definir los estilos usando styled-components
+//Styles
 const FormContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
     color: #ffffff;
-    font-family: 'Press Start 2P', cursive;
 `;
 
 const Form = styled.form`
@@ -114,7 +113,7 @@ const Input = styled.input`
     background-color: #1e1e1e;
     color: #ffffff;
     box-shadow: 2px 2px #000000;
-    font-family: 'VT323', monospace;
+    font-family: 'Roboto Mono', monospace; /* Usar fuente monospace para inputs */
 `;
 
 const Button = styled.button`
@@ -122,14 +121,9 @@ const Button = styled.button`
     color: #ffffff;
     border: 3px solid #000000;
     padding: 10px 20px;
-    font-family: 'Press Start 2P', cursive;
     cursor: pointer;
     transition: background-color 0.3s;
     box-shadow: 2px 2px #000000;
-
-    &:hover {
-        background-color: #0d6d8c;
-    }
 `;
 
 const Message = styled.p<{ success?: boolean }>`
