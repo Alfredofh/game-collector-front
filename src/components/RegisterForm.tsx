@@ -15,18 +15,18 @@ const RegisterForm: React.FC = () => {
 
         // Validaciones en el frontend
         if (!username || !email || !password) {
-            setError('Todos los campos son obligatorios');
+            setError('All fields are required');
             return;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            setError('El formato del correo electrónico no es válido');
+            setError('Invalid email format');
             return;
         }
 
         if (password.length < 6) {
-            setError('La contraseña debe tener al menos 6 caracteres');
+            setError('Password must be at least 6 characters long');
             return;
         }
 
@@ -38,7 +38,7 @@ const RegisterForm: React.FC = () => {
             if (err.response && err.response.data) {
                 setError(err.response.data.message);
             } else {
-                setError('Error de red. Inténtalo de nuevo más tarde.');
+                setError('Network error. Please try again later.');
             }
             setSuccess(null);
         }
@@ -46,10 +46,10 @@ const RegisterForm: React.FC = () => {
 
     return (
         <FormContainer>
-            <h2>Registro de Usuario</h2>
+            <h2>User Register</h2>
             <Form onSubmit={handleSubmit}>
                 <div>
-                    <Label htmlFor="username">Nombre de usuario:</Label>
+                    <Label htmlFor="username">Username:</Label>
                     <Input
                         type="text"
                         id="username"
@@ -58,7 +58,7 @@ const RegisterForm: React.FC = () => {
                     />
                 </div>
                 <div>
-                    <Label htmlFor="email">Correo electrónico:</Label>
+                    <Label htmlFor="email">Email</Label>
                     <Input
                         type="email"
                         id="email"
@@ -67,7 +67,7 @@ const RegisterForm: React.FC = () => {
                     />
                 </div>
                 <div>
-                    <Label htmlFor="password">Contraseña:</Label>
+                    <Label htmlFor="password">Password:</Label>
                     <Input
                         type="password"
                         id="password"
@@ -75,7 +75,7 @@ const RegisterForm: React.FC = () => {
                         onChange={(e) => setPassword(e.target.value)}
                     />
                 </div>
-                <Button type="submit">Registrarse</Button>
+                <Button type="submit">Register</Button>
             </Form>
             {error && <Message>{error}</Message>}
             {success && <Message success>{success}</Message>}
