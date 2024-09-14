@@ -34,6 +34,9 @@ const RegisterForm: React.FC = () => {
         try {
             const data = await registerUser({ username, email, password });
             setSuccess(data.message);
+            setUsername('');
+            setEmail('');
+            setPassword('');
             setError(null);
         } catch (err: any) {
             if (err.response && err.response.data) {
