@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom'; // Importar useNavigate
 import { loginUser } from '../services/userServices';
 
+// ...
 
 const LoginForm: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate(); // Inicializar useNavigate
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -17,8 +20,13 @@ const LoginForm: React.FC = () => {
         }
 
         try {
-            const response = await loginUser({ email, password }); // Llama a la API para iniciar sesión
+            const response = await loginUser({ email, password });
             // Maneja el inicio de sesión exitoso
+            // Guarda el token o la información del usuario en localStorage
+            localStorage.setItem('token', response.token);
+
+            // Redirige al usuario a la página principal o al panel de usuario
+            navigate('/user-home'); // Cambia la ruta a donde quieras redirigir
         } catch (err: any) {
             setError('Invalid email or password');
         }
@@ -52,6 +60,7 @@ const LoginForm: React.FC = () => {
         </FormContainer>
     );
 };
+
 
 const FormContainer = styled.div`
     display: flex;
