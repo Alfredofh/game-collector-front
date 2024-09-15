@@ -21,12 +21,10 @@ const LoginForm: React.FC = () => {
 
         try {
             const response = await loginUser({ email, password });
-            // Maneja el inicio de sesión exitoso
-            // Guarda el token o la información del usuario en localStorage
             localStorage.setItem('token', response.token);
 
             // Redirige al usuario a la página principal o al panel de usuario
-            navigate('/user-home'); // Cambia la ruta a donde quieras redirigir
+            navigate('/user-home'); //TODO Cambiar la ruta a donde quieras redirigir
         } catch (err: any) {
             setError('Invalid email or password');
         }
