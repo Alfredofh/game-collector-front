@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import RegisterForm from './components/RegisterForm';
 import LoginForm from './components/LoginForm';
 import GlobalStyles from './styles/GlobalStyles'; 
+import Logout from './components/LogOut';
 
 const App: React.FC = () => {
     return (
