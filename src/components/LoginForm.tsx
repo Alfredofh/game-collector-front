@@ -1,15 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../services/userServices';
 import { useAuth } from '../contexts/authContext';
-
 const LoginForm: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const {login} = useAuth(); 
+    const { isAuthenticated, login } = useAuth();
     const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        }
+    }, [isAuthenticated, navigate]);
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -21,14 +26,13 @@ const LoginForm: React.FC = () => {
 
         try {
             const response = await loginUser({ email, password });
-            localStorage.setItem('token', response.token);
-
-            // Redirige al usuario a la página principal o al panel de usuario
-            navigate('/dashboard'); //TODO Cambiar la ruta a donde quieras redirigir
+            login(response.token);
         } catch (err: any) {
             setError('Invalid email or password');
+            console.error('Error during login:', err);
         }
     };
+
 
     return (
         <FormContainer>
