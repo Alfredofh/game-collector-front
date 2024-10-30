@@ -14,6 +14,9 @@ const NavBar: React.FC = () => {
                     <StyledLink to="/collection">My Collection</StyledLink>
                 </NavItem>
                 <NavItem>
+                    <StyledLink to="/collection/new">New Collection</StyledLink>
+                </NavItem>
+                <NavItem>
                     <StyledLink to="/search">Search Games</StyledLink>
                 </NavItem>
                 <NavItem>
