@@ -6,27 +6,27 @@ interface CollectionData {
 
 // Crear nueva colección
 export const createCollection = async (collectionData: CollectionData, token: string) => {
-    const response = await axios.post('/colecciones', collectionData, {
+    const response = await axios.post('/collection', collectionData, {
         headers: {
-            Authorization: `Bearer ${token}`, 
+            Authorization: `Bearer ${token}`,
         },
     });
     return response.data;
 };
 
-// Obtener todas las colecciones de un usuario
+// Obtener todas las collection de un usuario
 export const getCollections = async (token: string) => {
-    const response = await axios.get('/colecciones', {
+    const response = await axios.get('/collection', {
         headers: {
             Authorization: `Bearer ${token}`,
         },
     });
-    return response.data; // Devuelve el listado de colecciones
+    return response.data; // Devuelve el listado de collection
 };
 
 // Borrar una colección por ID
 export const deleteCollection = async (collectionId: number, token: string) => {
-    const response = await axios.delete(`/colecciones/${collectionId}`, {
+    const response = await axios.delete(`/collection/${collectionId}`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
