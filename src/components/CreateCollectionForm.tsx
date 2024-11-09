@@ -15,7 +15,7 @@ const CreateCollectionForm: React.FC<CreateCollectionFormProps> = ({ onCollectio
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!name) {
             setError('El nombre de la colección es obligatorio');
             return;
@@ -32,7 +32,6 @@ const CreateCollectionForm: React.FC<CreateCollectionFormProps> = ({ onCollectio
             setSuccessMessage(response.message);
             onCollectionCreated(response.message);
 
-            // Redirigir después de un pequeño retraso
             setTimeout(() => navigate('/collection'), 2000);
         } catch (error: any) {
             setError('Error al crear la colección');
