@@ -8,16 +8,16 @@ const NavBar: React.FC = () => {
         <Nav>
             <NavList>
                 <NavItem>
-                    <StyledLink to="/home">Home</StyledLink>
+                    <StyledLink to="/dashboard">Home</StyledLink>
                 </NavItem>
                 <NavItem>
-                    <StyledLink to="/collection">My Collection</StyledLink>
+                    <StyledLink to="/collection">My Collections</StyledLink>
                 </NavItem>
                 <NavItem>
                     <StyledLink to="/collection/new">New Collection</StyledLink>
                 </NavItem>
                 <NavItem>
-                    <StyledLink to="/search">Search Games</StyledLink>
+                    <StyledLink to="/scanner">Search Games</StyledLink>
                 </NavItem>
                 <NavItem>
                     <StyledLink to="/prices">Prices</StyledLink>

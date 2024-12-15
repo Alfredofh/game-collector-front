@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { getCollections } from "../services/collectionService";
-import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+
 interface Collection {
     id: number;
     name: string;
@@ -15,10 +16,9 @@ interface CollectionListProps {
 
 const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
     const [collections, setCollections] = useState<Collection[]>([]);
-    console.log("collections", collections);
-
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchCollections = async () => {
@@ -26,7 +26,11 @@ const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
                 const data = await getCollections(token);
                 setCollections(data);
             } catch (err: any) {
-                setError('Error al cargar las colecciones');
+                if (err.response && err.response.status === 401) {
+                    setError('No autorizado. Por favor, inicia sesión nuevamente.');
+                } else {
+                    setError('Error al cargar las colecciones. Intenta nuevamente.');
+                }
             } finally {
                 setLoading(false);
             }
@@ -37,13 +41,14 @@ const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
 
     if (loading) return <p>Cargando colecciones...</p>;
     if (error) return <p>{error}</p>;
+    if (collections.length === 0) return <p>No tienes colecciones disponibles. ¡Crea una nueva!</p>;
 
     return (
         <ListContainer>
             <Title>Mis Colecciones</Title>
             <List>
                 {collections.map((collection) => (
-                    <ListItem key={collection.id}>
+                    <ListItem key={collection.id} onClick={() => navigate(`/collection/${collection.id}`)}>
                         <ItemName>{collection.name}</ItemName>
                         <ItemDate>Creada el: {new Date(collection.created_at).toLocaleDateString()}</ItemDate>
                     </ListItem>
@@ -53,7 +58,7 @@ const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
     );
 };
 
-//Styles
+// Styles
 const ListContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -90,6 +95,11 @@ const ListItem = styled.li`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #292929;
+    }
 `;
 
 const ItemName = styled.span`
@@ -100,6 +110,5 @@ const ItemDate = styled.span`
     font-size: 14px;
     color: #aaaaaa;
 `;
-
 
 export default CollectionList;

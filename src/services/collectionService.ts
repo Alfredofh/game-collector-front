@@ -24,6 +24,16 @@ export const getCollections = async (token: string) => {
     return response.data; // Devuelve el listado de collection
 };
 
+// Obtener coleccion de un usuario por Id
+export const getCollectionById = async (collectionId: number, token: string) => {
+    const response = await axios.get(`/collection/${collectionId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return response.data;
+};
+
 // Borrar una colección por ID
 export const deleteCollection = async (collectionId: number, token: string) => {
     const response = await axios.delete(`/collection/${collectionId}`, {
