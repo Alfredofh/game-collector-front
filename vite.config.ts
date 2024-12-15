@@ -1,0 +1,22 @@
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import svgr from 'vite-plugin-svgr';
+
+export default defineConfig({
+    plugins: [react(), tsconfigPaths(), svgr()],
+    server: {
+        port: 3000,
+        // Configura redirecciones para rutas desconocidas
+        fs: {
+            strict: false,
+        },
+        middlewareMode: false,
+    },
+    build: {
+        // Asegura que el servidor de producción sirva `index.html`
+        rollupOptions: {
+            input: './index.html',
+        },
+    },
+});
