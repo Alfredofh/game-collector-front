@@ -7,16 +7,16 @@ export default defineConfig({
     plugins: [react(), tsconfigPaths(), svgr()],
     server: {
         port: 3000,
-        // Configura redirecciones para rutas desconocidas
-        fs: {
-            strict: false,
-        },
-        middlewareMode: false,
     },
     build: {
-        // Asegura que el servidor de producción sirva `index.html`
+        outDir: 'dist',
         rollupOptions: {
             input: './index.html',
+        },
+    },
+    resolve: {
+        alias: {
+            '@': '/src',
         },
     },
 });
