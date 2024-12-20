@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getCollections, updateCollection } from "../services/collectionService";
+import { getCollections, updateCollection, deleteCollection } from "../services/collectionService";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -19,9 +19,11 @@ const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<Collection | null>(null);
     const [newName, setNewName] = useState("");
-    const [isSuccess, setIsSuccess] = useState(false);
+    const [successFeedback, setSuccessFeedback] = useState<{ message: string; icon: string } | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -49,15 +51,23 @@ const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
         setIsModalOpen(true);
     };
 
+    const handleDeleteClick = (collection: Collection) => {
+        setDeleteTarget(collection);
+        setIsDeleteModalOpen(true);
+    };
+
     const handleSave = async () => {
         if (!selectedCollection) return;
 
         try {
             await updateCollection(selectedCollection.id, { name: newName }, token);
-            setIsSuccess(true);
+            setSuccessFeedback({
+                message: "¡Colección actualizada con éxito!",
+                icon: "✔",
+            });
             setTimeout(() => {
                 setIsModalOpen(false);
-                setIsSuccess(false);
+                setSuccessFeedback(null);
             }, 2000);
             setCollections((prevCollections) =>
                 prevCollections.map((collection) =>
@@ -72,6 +82,28 @@ const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
         }
     };
 
+    const handleDelete = async () => {
+        if (!deleteTarget) return;
+
+        try {
+            await deleteCollection(deleteTarget.id, token);
+            setSuccessFeedback({
+                message: "¡Colección borrada exitosamente!",
+                icon: "🗑️",
+            });
+            setCollections((prevCollections) =>
+                prevCollections.filter((collection) => collection.id !== deleteTarget.id)
+            );
+            setTimeout(() => {
+                setIsDeleteModalOpen(false);
+                setSuccessFeedback(null);
+            }, 2000);
+        } catch (error) {
+            console.error("Error al borrar la colección:", error);
+            alert("No se pudo borrar la colección.");
+        }
+    };
+
     if (loading) return <p>Cargando colecciones...</p>;
     if (error) return <p>{error}</p>;
     if (collections.length === 0) return <p>No tienes colecciones disponibles. ¡Crea una nueva!</p>;
@@ -83,17 +115,26 @@ const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
                 {collections.map((collection) => (
                     <ListItem key={collection.id}>
                         <ItemName>{collection.name}</ItemName>
-                        <EditButton onClick={() => handleEditClick(collection)}>Editar</EditButton>
+                        <ButtonGroup>
+                            <EditButton onClick={() => handleEditClick(collection)}>
+                                <i className="fas fa-edit" />
+                            </EditButton>
+                            <DeleteButton onClick={() => handleDeleteClick(collection)}>
+                                <i className="fas fa-trash-alt" />
+                            </DeleteButton>
+                        </ButtonGroup>
                     </ListItem>
+
                 ))}
             </List>
 
+            {/* Modal para Editar */}
             {isModalOpen && (
                 <ModalOverlay>
                     <ModalContent>
-                        {isSuccess ? (
+                        {successFeedback ? (
                             <SuccessMessage>
-                                <CheckIcon>✔</CheckIcon> ¡Colección actualizada con éxito!
+                                <CheckIcon>{successFeedback.icon}</CheckIcon> {successFeedback.message}
                             </SuccessMessage>
                         ) : (
                             <>
@@ -108,6 +149,28 @@ const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
                                     <ModalButton primary onClick={handleSave}>
                                         Guardar
                                     </ModalButton>
+                                </ModalActions>
+                            </>
+                        )}
+                    </ModalContent>
+                </ModalOverlay>
+            )}
+
+            {/* Modal para Eliminar */}
+            {isDeleteModalOpen && (
+                <ModalOverlay>
+                    <ModalContent>
+                        {successFeedback ? (
+                            <SuccessMessage>
+                                <CheckIcon>{successFeedback.icon}</CheckIcon> {successFeedback.message}
+                            </SuccessMessage>
+                        ) : (
+                            <>
+                                <h3>¿Estás seguro de que deseas eliminar esta colección?</h3>
+                                <p>{deleteTarget?.name}</p>
+                                <ModalActions>
+                                    <ModalButton onClick={() => setIsDeleteModalOpen(false)}>Cancelar</ModalButton>
+                                    <ModalButton primary onClick={handleDelete}>Eliminar</ModalButton>
                                 </ModalActions>
                             </>
                         )}
@@ -166,40 +229,38 @@ const EditButton = styled.button`
     color: #1b9aaa;
     border: none;
     cursor: pointer;
-    font-size: 14px;
-    text-decoration: underline;
+    font-size: 16px;
+    margin-right: 8px;
+
     &:hover {
         color: #148a8a;
     }
+
+    i {
+        font-size: 18px; // Tamaño del icono
+    }
 `;
 
+const DeleteButton = styled.button`
+    background-color: transparent;
+    color: #e63946;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
 
+    &:hover {
+        color: #a62030;
+    }
 
-const SuccessMessage = styled.div`
-    color: #3be13b;
-    font-size: 18px;
+    i {
+        font-size: 18px; // Tamaño del icono
+    }
+`;
+
+const ButtonGroup = styled.div`
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
-`;
-
-const CheckIcon = styled.span`
-    font-size: 30px;
-    font-weight: bold;
-`;
-
-
-const Input = styled.input` 
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 3px solid #000000;
-    background-color: #1e1e1e;
-    color: #ffffff;
-    box-shadow: 2px 2px #000000;
-    font-family: 'Roboto Mono', monospace;
+    gap: 10px; // Espaciado entre botones
 `;
 
 
@@ -222,6 +283,7 @@ const ModalContent = styled.div`
     border: 4px solid #000000;
     box-shadow: 5px 5px #000000;
     text-align: center;
+    width: 300px;
 `;
 
 const ModalActions = styled.div`
@@ -231,17 +293,41 @@ const ModalActions = styled.div`
 `;
 
 const ModalButton = styled.button<{ primary?: boolean }>`
-    background-color: ${(props) => (props.primary ? "#1b9aaa" : "#444444")};
+    background-color: ${(props) => (props.primary ? "#e63946" : "#444444")};
     color: #ffffff;
     padding: 10px 15px;
     border: none;
     cursor: pointer;
     transition: background-color 0.3s;
     &:hover {
-        background-color: ${(props) => (props.primary ? "#148a8a" : "#333333")};
+        background-color: ${(props) => (props.primary ? "#a62030" : "#333333")};
     }
 `;
 
+const SuccessMessage = styled.div`
+    color: #3be13b;
+    font-size: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+`;
 
+const CheckIcon = styled.span`
+    font-size: 30px;
+    font-weight: bold;
+`;
+
+const Input = styled.input`
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 3px solid #000000;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    box-shadow: 2px 2px #000000;
+    font-family: 'Roboto Mono', monospace;
+`;
 
 export default CollectionList;
