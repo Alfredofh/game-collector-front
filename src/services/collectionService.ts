@@ -34,6 +34,18 @@ export const getCollectionById = async (collectionId: number, token: string) => 
     return response.data;
 };
 
+//Actualizar collection
+export const updateCollection = async (collectionId: number, collectionData: CollectionData, token:
+    string) => {
+    const response = await axios.put(`/collection/${collectionId}`, collectionData, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return response.data;
+};
+
+
 // Borrar una colección por ID
 export const deleteCollection = async (collectionId: number, token: string) => {
     const response = await axios.delete(`/collection/${collectionId}`, {
@@ -41,5 +53,5 @@ export const deleteCollection = async (collectionId: number, token: string) => {
             Authorization: `Bearer ${token}`,
         },
     });
-    return response.data; // Devuelve la respuesta de la eliminación
+    return response.data;
 };

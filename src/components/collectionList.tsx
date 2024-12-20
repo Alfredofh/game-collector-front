@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getCollections } from "../services/collectionService";
+import { getCollections, updateCollection } from "../services/collectionService";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -18,6 +18,10 @@ const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
     const [collections, setCollections] = useState<Collection[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
+    const [newName, setNewName] = useState("");
+    const [isSuccess, setIsSuccess] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -39,6 +43,35 @@ const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
         fetchCollections();
     }, [token]);
 
+    const handleEditClick = (collection: Collection) => {
+        setSelectedCollection(collection);
+        setNewName(collection.name);
+        setIsModalOpen(true);
+    };
+
+    const handleSave = async () => {
+        if (!selectedCollection) return;
+
+        try {
+            await updateCollection(selectedCollection.id, { name: newName }, token);
+            setIsSuccess(true);
+            setTimeout(() => {
+                setIsModalOpen(false);
+                setIsSuccess(false);
+            }, 2000);
+            setCollections((prevCollections) =>
+                prevCollections.map((collection) =>
+                    collection.id === selectedCollection.id
+                        ? { ...collection, name: newName }
+                        : collection
+                )
+            );
+        } catch (error) {
+            console.error("Error al actualizar la colección:", error);
+            alert("No se pudo actualizar la colección.");
+        }
+    };
+
     if (loading) return <p>Cargando colecciones...</p>;
     if (error) return <p>{error}</p>;
     if (collections.length === 0) return <p>No tienes colecciones disponibles. ¡Crea una nueva!</p>;
@@ -48,12 +81,39 @@ const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
             <Title>Mis Colecciones</Title>
             <List>
                 {collections.map((collection) => (
-                    <ListItem key={collection.id} onClick={() => navigate(`/collection/${collection.id}`)}>
+                    <ListItem key={collection.id}>
                         <ItemName>{collection.name}</ItemName>
-                        <ItemDate>Creada el: {new Date(collection.created_at).toLocaleDateString()}</ItemDate>
+                        <EditButton onClick={() => handleEditClick(collection)}>Editar</EditButton>
                     </ListItem>
                 ))}
             </List>
+
+            {isModalOpen && (
+                <ModalOverlay>
+                    <ModalContent>
+                        {isSuccess ? (
+                            <SuccessMessage>
+                                <CheckIcon>✔</CheckIcon> ¡Colección actualizada con éxito!
+                            </SuccessMessage>
+                        ) : (
+                            <>
+                                <h3>Editar Colección</h3>
+                                <Input
+                                    type="text"
+                                    value={newName}
+                                    onChange={(e) => setNewName(e.target.value)}
+                                />
+                                <ModalActions>
+                                    <ModalButton onClick={() => setIsModalOpen(false)}>Cancelar</ModalButton>
+                                    <ModalButton primary onClick={handleSave}>
+                                        Guardar
+                                    </ModalButton>
+                                </ModalActions>
+                            </>
+                        )}
+                    </ModalContent>
+                </ModalOverlay>
+            )}
         </ListContainer>
     );
 };
@@ -95,20 +155,93 @@ const ListItem = styled.li`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    cursor: pointer;
-
-    &:hover {
-        background-color: #292929;
-    }
 `;
 
 const ItemName = styled.span`
     font-size: 18px;
 `;
 
-const ItemDate = styled.span`
+const EditButton = styled.button`
+    background-color: transparent;
+    color: #1b9aaa;
+    border: none;
+    cursor: pointer;
     font-size: 14px;
-    color: #aaaaaa;
+    text-decoration: underline;
+    &:hover {
+        color: #148a8a;
+    }
 `;
+
+
+
+const SuccessMessage = styled.div`
+    color: #3be13b;
+    font-size: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+`;
+
+const CheckIcon = styled.span`
+    font-size: 30px;
+    font-weight: bold;
+`;
+
+
+const Input = styled.input` 
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 3px solid #000000;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    box-shadow: 2px 2px #000000;
+    font-family: 'Roboto Mono', monospace;
+`;
+
+
+const ModalOverlay = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
+
+const ModalContent = styled.div`
+    background-color: #3c3c3c;
+    color: #ffffff;
+    padding: 20px;
+    border: 4px solid #000000;
+    box-shadow: 5px 5px #000000;
+    text-align: center;
+`;
+
+const ModalActions = styled.div`
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+`;
+
+const ModalButton = styled.button<{ primary?: boolean }>`
+    background-color: ${(props) => (props.primary ? "#1b9aaa" : "#444444")};
+    color: #ffffff;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    &:hover {
+        background-color: ${(props) => (props.primary ? "#148a8a" : "#333333")};
+    }
+`;
+
+
 
 export default CollectionList;
