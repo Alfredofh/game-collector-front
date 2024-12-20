@@ -80,7 +80,7 @@ const Label = styled.label`
     font-size: 16px;
 `;
 
-const Input = styled.input`
+const Input = styled.input` 
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
