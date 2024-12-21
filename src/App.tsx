@@ -8,7 +8,7 @@ import UserDashboard from './pages/UserDashboard';
 import { AuthProvider } from './contexts/authContext';
 import NavBar from './components/NavBar';
 import CreateCollectionPage from './pages/CreateCollectionPage';
-import BarcodeScannerPage from './pages/BarcodeScannerPage';
+import SearchPage from './pages/BarcodeScannerPage';
 import CollectionPage from './pages/CollectionPage';
 const App: React.FC = () => {
     return (
@@ -23,7 +23,7 @@ const App: React.FC = () => {
                         <Route path="/dashboard" element={<UserDashboard />} />
                         <Route path="/logout" element={<Logout />} />
                         <Route path="/collection/new" element={<CreateCollectionPage />} />
-                        <Route path="/scanner" element={<BarcodeScannerPage />} />
+                        <Route path="/scanner" element={<SearchPage />} />
                         <Route path="/collection/:id" element={<CollectionPage />} />
                     </Routes>
                 </Router>
