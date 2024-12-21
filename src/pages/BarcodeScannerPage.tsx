@@ -36,7 +36,6 @@ const SearchPage: React.FC = () => {
         >
             <h1>Escáner de Código de Barras</h1>
 
-            {/* Mensaje de éxito */}
             {detected && (
                 <p style={{ color: 'green', fontWeight: 'bold' }}>¡Código Detectado Exitosamente!</p>
             )}
