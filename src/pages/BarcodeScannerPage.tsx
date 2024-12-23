@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BarcodeScanner from '../components/BarcodeScanner';
-
-const BarcodeScannerPage: React.FC = () => {
+import SearchByGameNameForm from '../components/searchForm';
+const SearchPage: React.FC = () => {
     const navigate = useNavigate();
     const [detected, setDetected] = useState(false);
     const [detectedCode, setDetectedCode] = useState<string | null>(null);
@@ -36,13 +36,12 @@ const BarcodeScannerPage: React.FC = () => {
         >
             <h1>Escáner de Código de Barras</h1>
 
-            {/* Mensaje de éxito */}
             {detected && (
                 <p style={{ color: 'green', fontWeight: 'bold' }}>¡Código Detectado Exitosamente!</p>
             )}
 
             <BarcodeScanner onDetected={handleBarcodeDetected} />
-
+            <SearchByGameNameForm />
             <button onClick={handleBack} style={{ marginTop: '20px' }}>
                 Volver
             </button>
@@ -50,4 +49,4 @@ const BarcodeScannerPage: React.FC = () => {
     );
 };
 
-export default BarcodeScannerPage;
+export default SearchPage;
