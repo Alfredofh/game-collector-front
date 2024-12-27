@@ -116,10 +116,16 @@ const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
                     <ListItem key={collection.id} onClick={() => navigate(`/collection/${collection.id}`)}>
                         <ItemName>{collection.name}</ItemName>
                         <ButtonGroup>
-                            <EditButton onClick={() => handleEditClick(collection)}>
+                            <EditButton onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditClick(collection);
+                            }}>
                                 <i className="fas fa-edit" />
                             </EditButton>
-                            <DeleteButton onClick={() => handleDeleteClick(collection)}>
+                            <DeleteButton onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteClick(collection);
+                            }}>
                                 <i className="fas fa-trash-alt" />
                             </DeleteButton>
                         </ButtonGroup>
