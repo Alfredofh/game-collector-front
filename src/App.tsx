@@ -10,6 +10,7 @@ import NavBar from './components/NavBar';
 import CreateCollectionPage from './pages/CreateCollectionPage';
 import SearchPage from './pages/BarcodeScannerPage';
 import CollectionPage from './pages/CollectionPage';
+import AddVideogameForm from './pages/addVideoGameForm';
 const App: React.FC = () => {
     return (
         <>
@@ -25,6 +26,7 @@ const App: React.FC = () => {
                         <Route path="/collection/new" element={<CreateCollectionPage />} />
                         <Route path="/scanner" element={<SearchPage />} />
                         <Route path="/collection/:id" element={<CollectionPage />} />
+                        <Route path="/collection/:id/add-videogame" element={<AddVideogameForm />} />
                     </Routes>
                 </Router>
             </AuthProvider>

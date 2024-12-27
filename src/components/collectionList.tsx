@@ -113,7 +113,7 @@ const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
             <Title>Mis Colecciones</Title>
             <List>
                 {collections.map((collection) => (
-                    <ListItem key={collection.id}>
+                    <ListItem key={collection.id} onClick={() => navigate(`/collection/${collection.id}`)}>
                         <ItemName>{collection.name}</ItemName>
                         <ButtonGroup>
                             <EditButton onClick={() => handleEditClick(collection)}>
@@ -218,6 +218,7 @@ const ListItem = styled.li`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer;
 `;
 
 const ItemName = styled.span`

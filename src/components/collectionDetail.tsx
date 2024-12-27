@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { getCollectionById } from '../services/collectionService';
 import { useAuth } from '../contexts/authContext';
-
+import { useNavigate } from 'react-router-dom';
 interface CollectionDetailProps {
     collectionId: number;
 }
@@ -13,6 +13,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
     const [collection, setCollection] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchCollection = async () => {
@@ -55,7 +56,11 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
                 </GameList>
             ) : (
                 <Description>No hay juegos en esta colección.</Description>
+
             )}
+            <Button onClick={() => navigate(`/collection/${collection.id}/add-videogame`)}>
+                {collection.games && collection.games.length > 0 ? 'Añadir otro juego' : 'Quieres añadir un juego?'}
+            </Button>
         </Container>
     );
 };
@@ -109,4 +114,17 @@ const GameDetails = styled.span`
     font-size: 14px;
     color: #aaaaaa;
 `;
+
+const Button = styled.button`
+    grid-column: span 2;
+    background-color: #1b9aaa;
+    color: #ffffff;
+    border: 3px solid #000000;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    box-shadow: 2px 2px #000000;
+    font-family: 'Press Start 2P', cursive;
+`;
+
 export default CollectionDetail;
