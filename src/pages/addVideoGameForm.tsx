@@ -78,7 +78,7 @@ const AddVideogameForm: React.FC = () => {
                 ...formState,
                 collection_id: parseInt(id || '0', 10),
             };
-            await axios.post('/api/videogames', videogameData, {
+            await axios.post('/api/videogames/add', videogameData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },

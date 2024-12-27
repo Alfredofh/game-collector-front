@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { searchGamesByName } from '../services/searchGamesIGDB';
+import { addGameToCollection } from '../services/gamesService';
 
-const SearchByGameNameForm: React.FC = () => {
+interface SearchByGameNameFormProps {
+    collectionId: number;
+}
+
+const SearchByGameNameForm: React.FC<SearchByGameNameFormProps> = ({ collectionId }) => {
     const [name, setName] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [results, setResults] = useState<any[]>([]);
@@ -25,6 +30,15 @@ const SearchByGameNameForm: React.FC = () => {
             console.error('Error al buscar juego:', error);
         }
     };
+
+    const handleAddToCollection = async (game: any) => {
+        try {
+            await addGameToCollection(game, collectionId);
+        } catch (error) {
+            console.error('Error al añadir juego a la colección:', error);
+            setError('Error al añadir juego a la colección. Inténtalo nuevamente.');
+        }
+    }
 
     return (
         <FormContainer>
@@ -66,6 +80,7 @@ const SearchByGameNameForm: React.FC = () => {
                                         : 'No description available.'}
                                 </GameDescription>
                             </CardContent>
+                            <Button onClick={() => handleAddToCollection(game)}>Añadir a mi colección</Button>
                         </Card>
                     ))}
                 </ResultsGrid>
@@ -119,7 +134,7 @@ const Button = styled.button`
     transition: background-color 0.3s;
     box-shadow: 2px 2px #000000;
     font-family: 'Press Start 2P', cursive;
-
+    font-size: 11px;
     &:hover {
         background-color: #148a8a;
     }
@@ -191,3 +206,4 @@ const GameDescription = styled.p`
     color: #dcdcdc;
     line-height: 1.5;
 `;
+

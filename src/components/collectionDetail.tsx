@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { getCollectionById } from '../services/collectionService';
 import { useAuth } from '../contexts/authContext';
 import { useNavigate } from 'react-router-dom';
+import SearchByGameNameForm from './searchForm';
 interface CollectionDetailProps {
     collectionId: number;
 }
@@ -43,6 +44,8 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
         <Container>
             <Title>{collection.name}</Title>
             <Description>Creada el: {new Date(collection.created_at).toLocaleDateString()}</Description>
+            <Title>Busca tu juego y añádelo en 1 click</Title>
+            <SearchByGameNameForm collectionId={collection.id} />
             {collection.games && collection.games.length > 0 ? (
                 <GameList>
                     {collection.games.map((game: any) => (
