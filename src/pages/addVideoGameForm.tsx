@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import { searchGamesByName } from '../services/searchGamesIGDB';
-
+import { addGameToCollection } from '../services/gamesService';
 type FormState = {
     name: string;
     platform: string;
@@ -78,11 +78,7 @@ const AddVideogameForm: React.FC = () => {
                 ...formState,
                 collection_id: parseInt(id || '0', 10),
             };
-            await axios.post('/api/videogames/add', videogameData, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            await addGameToCollection(videogameData, id)
             alert('Videogame added successfully!');
             navigate(`/collection/${id}`);
         } catch (error) {
