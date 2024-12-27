@@ -59,7 +59,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
 
             )}
             <Button onClick={() => navigate(`/collection/${collection.id}/add-videogame`)}>
-                ¿Quieres añadir uno?
+                {collection.games && collection.games.length > 0 ? 'Añadir otro juego' : 'Quieres añadir un juego?'}
             </Button>
         </Container>
     );
