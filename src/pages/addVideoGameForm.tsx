@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
-
+import { searchGamesByName } from '../services/searchGamesIGDB';
 
 type FormState = {
     name: string;
@@ -16,7 +16,7 @@ type FormState = {
 };
 
 const AddVideogameForm: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
+    const { id } = useParams<{ id: string }>(); // id corresponds to the collection ID
     const navigate = useNavigate();
 
     const [formState, setFormState] = useState<FormState>({
@@ -30,6 +30,8 @@ const AddVideogameForm: React.FC = () => {
         image_url: '',
     });
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
@@ -38,6 +40,27 @@ const AddVideogameForm: React.FC = () => {
             ...prevState,
             [name]: name === 'release_year' || name === 'value' ? Number(value) || '' : value,
         }));
+    };
+
+    const handleNameBlur = async () => {
+        if (!formState.name) return;
+        setIsLoading(true);
+        try {
+            const [game] = await searchGamesByName(formState.name);
+            if (game) {
+                setFormState((prevState) => ({
+                    ...prevState,
+                    platform: game.platforms?.map((p: any) => p.name).join(', ') || '',
+                    release_year: game.first_release_date ? new Date(game.first_release_date * 1000).getFullYear() : '',
+                    description: game.summary || '',
+                    image_url: game.cover?.url || '',
+                }));
+            }
+        } catch (error) {
+            console.error('Error fetching game data:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -71,6 +94,7 @@ const AddVideogameForm: React.FC = () => {
                         name="name"
                         value={formState.name}
                         onChange={handleChange}
+                        onBlur={handleNameBlur}
                         required
                     />
                 </div>
@@ -82,6 +106,7 @@ const AddVideogameForm: React.FC = () => {
                         name="platform"
                         value={formState.platform}
                         onChange={handleChange}
+                        required
                     />
                 </div>
                 <div>
@@ -92,7 +117,7 @@ const AddVideogameForm: React.FC = () => {
                         name="release_year"
                         value={formState.release_year}
                         onChange={handleChange}
-
+                        required
                     />
                 </div>
                 <div>
@@ -103,7 +128,7 @@ const AddVideogameForm: React.FC = () => {
                         name="value"
                         value={formState.value}
                         onChange={handleChange}
-
+                        required
                     />
                 </div>
                 <div>
@@ -145,6 +170,7 @@ const AddVideogameForm: React.FC = () => {
                         onChange={handleChange}
                     />
                 </div>
+                {isLoading && <p>Loading game details...</p>}
                 <Button type="submit">Add Videogame</Button>
             </Form>
         </FormContainer>
@@ -210,6 +236,5 @@ const Button = styled.button`
     box-shadow: 2px 2px #000000;
     font-family: 'Press Start 2P', cursive;
 `;
-
 
 export default AddVideogameForm;
