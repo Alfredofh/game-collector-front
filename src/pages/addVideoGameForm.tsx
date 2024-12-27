@@ -15,6 +15,11 @@ type FormState = {
     image_url: string;
 };
 
+type PlatformOption = {
+    id: number;
+    name: string;
+};
+
 const AddVideogameForm: React.FC = () => {
     const { id } = useParams<{ id: string }>(); // id corresponds to the collection ID
     const navigate = useNavigate();
@@ -31,9 +36,10 @@ const AddVideogameForm: React.FC = () => {
     });
 
     const [isLoading, setIsLoading] = useState(false);
+    const [platformOptions, setPlatformOptions] = useState<PlatformOption[]>([]);
 
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
         const { name, value } = e.target;
         setFormState((prevState) => ({
@@ -48,10 +54,12 @@ const AddVideogameForm: React.FC = () => {
         try {
             const [game] = await searchGamesByName(formState.name);
             if (game) {
+                setPlatformOptions(game.platforms?.map((p: any) => ({ id: p.id, name: p.name })) || []);
                 setFormState((prevState) => ({
                     ...prevState,
-                    platform: game.platforms?.map((p: any) => p.name).join(', ') || '',
-                    release_year: game.first_release_date ? new Date(game.first_release_date * 1000).getFullYear() : '',
+                    release_year: game.first_release_date
+                        ? new Date(game.first_release_date * 1000).getFullYear()
+                        : '',
                     description: game.summary || '',
                     image_url: game.cover?.url || '',
                 }));
@@ -100,14 +108,20 @@ const AddVideogameForm: React.FC = () => {
                 </div>
                 <div>
                     <Label htmlFor="platform">Platform:</Label>
-                    <Input
-                        type="text"
+                    <Select
                         id="platform"
                         name="platform"
                         value={formState.platform}
                         onChange={handleChange}
-                        required
-                    />
+
+                    >
+                        <option value="">Select a platform</option>
+                        {platformOptions.map((platform) => (
+                            <option key={platform.id} value={platform.name}>
+                                {platform.name}
+                            </option>
+                        ))}
+                    </Select>
                 </div>
                 <div>
                     <Label htmlFor="release_year">Release Year:</Label>
@@ -117,7 +131,7 @@ const AddVideogameForm: React.FC = () => {
                         name="release_year"
                         value={formState.release_year}
                         onChange={handleChange}
-                        required
+
                     />
                 </div>
                 <div>
@@ -128,7 +142,7 @@ const AddVideogameForm: React.FC = () => {
                         name="value"
                         value={formState.value}
                         onChange={handleChange}
-                        required
+
                     />
                 </div>
                 <div>
@@ -202,6 +216,17 @@ const Label = styled.label`
 `;
 
 const Input = styled.input`
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 3px solid #000000;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    box-shadow: 2px 2px #000000;
+    font-family: 'Roboto Mono', monospace;
+`;
+
+const Select = styled.select`
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
