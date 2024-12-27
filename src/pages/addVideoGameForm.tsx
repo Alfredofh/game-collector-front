@@ -16,7 +16,7 @@ type FormState = {
 };
 
 const AddVideogameForm: React.FC = () => {
-    const { id } = useParams<{ id: string }>(); // id corresponds to the collection ID
+    const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
 
     const [formState, setFormState] = useState<FormState>({
@@ -82,7 +82,6 @@ const AddVideogameForm: React.FC = () => {
                         name="platform"
                         value={formState.platform}
                         onChange={handleChange}
-                        required
                     />
                 </div>
                 <div>
@@ -93,7 +92,7 @@ const AddVideogameForm: React.FC = () => {
                         name="release_year"
                         value={formState.release_year}
                         onChange={handleChange}
-                        required
+
                     />
                 </div>
                 <div>
@@ -104,7 +103,7 @@ const AddVideogameForm: React.FC = () => {
                         name="value"
                         value={formState.value}
                         onChange={handleChange}
-                        required
+
                     />
                 </div>
                 <div>
