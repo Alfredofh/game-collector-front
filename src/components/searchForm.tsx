@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { searchGamesByName } from '../services/searchGamesIGDB';
 import { addGameToCollection } from '../services/gamesService';
+import { useAuth } from '../contexts/authContext';
 
 interface SearchByGameNameFormProps {
     collectionId: number;
@@ -11,7 +12,7 @@ const SearchByGameNameForm: React.FC<SearchByGameNameFormProps> = ({ collectionI
     const [name, setName] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [results, setResults] = useState<any[]>([]);
-
+    const { token } = useAuth();
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null); // Limpiar el error antes de iniciar la búsqueda
@@ -33,12 +34,32 @@ const SearchByGameNameForm: React.FC<SearchByGameNameFormProps> = ({ collectionI
 
     const handleAddToCollection = async (game: any) => {
         try {
-            await addGameToCollection(game, collectionId);
+            if (!token) {
+                setError('No se encontró el token de autenticación. Inicia sesión nuevamente.');
+                return;
+            }
+
+            // Construir el payload con los datos requeridos
+            const payload = {
+                name: game.name,
+                platform: game.platforms?.map((p: any) => p.name).join(', ') || null,
+                release_year: game.first_release_date
+                    ? new Date(game.first_release_date * 1000).getFullYear()
+                    : null,
+                value: null,
+                upc: null,
+                ean: null,
+                description: game.summary || null,
+                image_url: game.cover?.url ? `https:${game.cover.url}` : null,
+                collection_id: collectionId,
+            };
+
+            await addGameToCollection(payload, token);
         } catch (error) {
             console.error('Error al añadir juego a la colección:', error);
             setError('Error al añadir juego a la colección. Inténtalo nuevamente.');
         }
-    }
+    };
 
     return (
         <FormContainer>
