@@ -15,6 +15,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    console.log(collection);
 
     useEffect(() => {
         const fetchCollection = async () => {
@@ -46,14 +47,24 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
             <Description>Creada el: {new Date(collection.created_at).toLocaleDateString()}</Description>
             <Title>Busca tu juego y añádelo en 1 click</Title>
             <SearchByGameNameForm collectionId={collection.id} />
-            {collection.games && collection.games.length > 0 ? (
+            {collection.video_games && collection.video_games.length > 0 ? (
                 <GameList>
-                    {collection.games.map((game: any) => (
+                    {collection.video_games.map((game: any) => (
                         <GameItem key={game.id}>
                             <GameName>{game.name}</GameName>
                             <GameDetails>
-                                {game.platform} - {game.release_year}
+                                {game.platform} - {game.release_year} -
                             </GameDetails>
+                            <ImageContainer>
+                                {game.image_url ? (
+                                    <GameImage
+                                        src={`${game.image_url}`}
+                                        alt={game.name}
+                                    />
+                                ) : (
+                                    <Placeholder>No Image</Placeholder>
+                                )}
+                            </ImageContainer>
                         </GameItem>
                     ))}
                 </GameList>
@@ -110,13 +121,40 @@ const GameItem = styled.li`
 `;
 
 const GameName = styled.span`
-    font-size: 18px;
+    font-size: 16px;
 `;
 
 const GameDetails = styled.span`
-    font-size: 14px;
+    font-size: 13px;
     color: #aaaaaa;
 `;
+
+const ImageContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #1a1a1a;
+    overflow: hidden;
+`;
+
+const GameImage = styled.img`
+    max-height: 100%; 
+    width: auto;
+    object-fit: contain; /
+`;
+
+const Placeholder = styled.div`
+    color: gray;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+    width: 100%;
+    background: #333;
+`;
+
 
 const Button = styled.button`
     grid-column: span 2;
