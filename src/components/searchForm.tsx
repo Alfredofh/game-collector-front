@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { searchGamesByName } from '../services/searchGamesIGDB';
 import { addGameToCollection } from '../services/gamesService';
 import { useAuth } from '../contexts/authContext';
+import { useNotifications } from "../contexts/notificationsContext";
+import { feedbackMessages } from '../constans/messages';
 
 interface SearchByGameNameFormProps {
     collectionId: number;
@@ -13,6 +15,7 @@ const SearchByGameNameForm: React.FC<SearchByGameNameFormProps> = ({ collectionI
     const [error, setError] = useState<string | null>(null);
     const [results, setResults] = useState<any[]>([]);
     const { token } = useAuth();
+    const { addNotification } = useNotifications();
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null); // Limpiar el error antes de iniciar la búsqueda
@@ -35,7 +38,7 @@ const SearchByGameNameForm: React.FC<SearchByGameNameFormProps> = ({ collectionI
     const handleAddToCollection = async (game: any) => {
         try {
             if (!token) {
-                setError('No se encontró el token de autenticación. Inicia sesión nuevamente.');
+                addNotification("error", feedbackMessages.general.error);
                 return;
             }
 
@@ -55,9 +58,11 @@ const SearchByGameNameForm: React.FC<SearchByGameNameFormProps> = ({ collectionI
             };
 
             await addGameToCollection(payload, token);
+            addNotification("success", feedbackMessages.game.added(game.name));
+
         } catch (error) {
             console.error('Error al añadir juego a la colección:', error);
-            setError('Error al añadir juego a la colección. Inténtalo nuevamente.');
+            addNotification("error", feedbackMessages.game.errorAdding(game.name));
         }
     };
 
