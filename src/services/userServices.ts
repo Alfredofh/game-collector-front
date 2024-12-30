@@ -13,12 +13,24 @@ interface LoginUserData {
 
 
 export const registerUser = async (userData: RegisterUserData) => {
-    const response = await axios.post('/users', userData);
-    return response.data;
+    try {
+        const response = await axios.post('/users', userData);
+        return response.data;
+    } catch (error) {
+        console.error('Error al registrar el usuario:', error);
+        throw new Error('No se pudo registrar el usuario');
+    }
+
 };
 
 
 export const loginUser = async (userData: LoginUserData) => {
-    const response = await axios.post('/login', userData);
-    return response.data;
+    try {
+        const response = await axios.post('/login', userData);
+        return response.data;
+    } catch (error) {
+        console.error('Error al iniciar sesión:', error);
+        throw new Error('No se pudo iniciar sesión');
+    }
+
 }
