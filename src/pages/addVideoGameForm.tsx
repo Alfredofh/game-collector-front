@@ -4,11 +4,12 @@ import axios from 'axios';
 import styled from 'styled-components';
 import { searchGamesByName } from '../services/searchGamesIGDB';
 import { addGameToCollection } from '../services/gamesService';
+import { useAuth } from '../contexts/authContext';
 type FormState = {
     name: string;
     platform: string;
-    release_year: number | '';
-    value: number | '';
+    release_year: number | null;
+    value: number | null;
     upc: string;
     ean: string;
     description: string;
@@ -22,13 +23,14 @@ type PlatformOption = {
 
 const AddVideogameForm: React.FC = () => {
     const { id } = useParams<{ id: string }>(); // id corresponds to the collection ID
+    const { token } = useAuth(); // Obtenemos el token del contexto
     const navigate = useNavigate();
 
     const [formState, setFormState] = useState<FormState>({
         name: '',
         platform: '',
-        release_year: '',
-        value: '',
+        release_year: null,
+        value: null,
         upc: '',
         ean: '',
         description: '',
@@ -59,7 +61,7 @@ const AddVideogameForm: React.FC = () => {
                     ...prevState,
                     release_year: game.first_release_date
                         ? new Date(game.first_release_date * 1000).getFullYear()
-                        : '',
+                        : null,
                     description: game.summary || '',
                     image_url: game.cover?.url || '',
                 }));
@@ -73,12 +75,18 @@ const AddVideogameForm: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!token) {
+            alert('You must be logged in to add a videogame.');
+            return;
+        }
+
         try {
             const videogameData = {
                 ...formState,
                 collection_id: parseInt(id || '0', 10),
             };
-            await addGameToCollection(videogameData, id)
+            await addGameToCollection(videogameData, token)
             alert('Videogame added successfully!');
             navigate(`/collection/${id}`);
         } catch (error) {
@@ -125,7 +133,7 @@ const AddVideogameForm: React.FC = () => {
                         type="number"
                         id="release_year"
                         name="release_year"
-                        value={formState.release_year}
+                        value={formState.release_year ?? ''}
                         onChange={handleChange}
 
                     />
@@ -136,7 +144,7 @@ const AddVideogameForm: React.FC = () => {
                         type="number"
                         id="value"
                         name="value"
-                        value={formState.value}
+                        value={formState.value ?? ''}
                         onChange={handleChange}
 
                     />
