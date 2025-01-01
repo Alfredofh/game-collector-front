@@ -41,6 +41,7 @@ const AddVideogameForm: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [platformOptions, setPlatformOptions] = useState<PlatformOption[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate()
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -55,25 +56,42 @@ const AddVideogameForm: React.FC = () => {
     const handleNameBlur = async () => {
         if (!formState.name) return;
         setIsLoading(true);
+        setErrorMessage('');
+
         try {
-            const [game] = await searchGamesByName(formState.name);
-            if (game) {
-                setPlatformOptions(game.platforms?.map((p: any) => ({ id: p.id, name: p.name })) || []);
-                setFormState((prevState) => ({
-                    ...prevState,
-                    release_year: game.first_release_date
-                        ? new Date(game.first_release_date * 1000).getFullYear()
-                        : null,
-                    description: game.summary || '',
-                    image_url: game.cover?.url || '',
-                }));
+            const games = await searchGamesByName(formState.name);
+
+            if (games.length === 0) {
+                setErrorMessage(`No games found matching "${formState.name}".`);
+                console.warn(`No games found for query: "${formState.name}"`);
+                return;
             }
-        } catch (error) {
-            console.error('Error fetching game data:', error);
+
+            // Maneja los datos del juego si hay resultados
+            setPlatformOptions(games[0].platforms?.map((p: any) => ({ id: p.id, name: p.name })) || []);
+            setFormState((prevState) => ({
+                ...prevState,
+                release_year: games[0].first_release_date
+                    ? new Date(games[0].first_release_date * 1000).getFullYear()
+                    : null,
+                description: games[0].summary || '',
+                image_url: games[0].cover?.url || '',
+            }));
+        } catch (error: any) {
+            const errorMessage =
+                error.status && error.message
+                    ? `Error (${error.status}): ${error.message}`
+                    : 'Unexpected error occurred.';
+            setErrorMessage(errorMessage);
+
+            // También muestra el error en la consola
+            console.error('Error while searching for games:', error);
         } finally {
             setIsLoading(false);
         }
     };
+
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -163,6 +181,12 @@ const AddVideogameForm: React.FC = () => {
                 </div>
                 {isLoading && <p>Loading game details...</p>}
                 <Button type="submit">Add Videogame</Button>
+                {errorMessage && (
+                    <ErrorMessage>
+                        {errorMessage}
+                    </ErrorMessage>
+                )}
+
             </Form>
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <h3>What would you like to do next?</h3>
@@ -253,6 +277,17 @@ const Button = styled.button`
     box-shadow: 2px 2px #000000;
     font-family: 'Press Start 2P', cursive;
 `;
+
+const ErrorMessage = styled.div`
+    grid-column: span 2;
+    color: red;
+    font-size: 14px;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    font-family: 'Roboto Mono', monospace;
+    text-align: center;
+`;
+
 
 const ModalOptions = styled.div`
     display: flex;
