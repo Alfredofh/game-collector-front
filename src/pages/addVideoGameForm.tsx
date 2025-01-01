@@ -152,42 +152,12 @@ const AddVideogameForm: React.FC = () => {
                         onChange={handleChange}
                     />
                 </div>
-                <div>
-                    <Label htmlFor="upc">UPC:</Label>
-                    <Input
-                        type="text"
-                        id="upc"
-                        name="upc"
-                        value={formState.upc}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div>
-                    <Label htmlFor="ean">EAN:</Label>
-                    <Input
-                        type="text"
-                        id="ean"
-                        name="ean"
-                        value={formState.ean}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div>
+                <div style={{ gridColumn: 'span 2' }}>
                     <Label htmlFor="description">Description:</Label>
                     <TextArea
                         id="description"
                         name="description"
                         value={formState.description}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div>
-                    <Label htmlFor="image_url">Image URL:</Label>
-                    <Input
-                        type="text"
-                        id="image_url"
-                        name="image_url"
-                        value={formState.image_url}
                         onChange={handleChange}
                     />
                 </div>
@@ -200,7 +170,9 @@ const AddVideogameForm: React.FC = () => {
 
 const FormContainer = styled.div`
     display: flex;
+    height: 50vh;
     flex-direction: column;
+    justify-content: center; 
     align-items: center;
     color: #ffffff;
 `;
