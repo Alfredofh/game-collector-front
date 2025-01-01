@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
 import styled from 'styled-components';
 import { searchGamesByName } from '../services/searchGamesIGDB';
 import { addGameToCollection } from '../services/gamesService';
 import { useAuth } from '../contexts/authContext';
+import Modal from '../components/Modal';
 type FormState = {
     name: string;
     platform: string;
@@ -24,9 +24,9 @@ type PlatformOption = {
 const AddVideogameForm: React.FC = () => {
     const { id } = useParams<{ id: string }>(); // id corresponds to the collection ID
     const { token } = useAuth(); // Obtenemos el token del contexto
-    const navigate = useNavigate();
 
-    const [formState, setFormState] = useState<FormState>({
+    // Estado inicial del formulario
+    const initialFormState: FormState = {
         name: '',
         platform: '',
         release_year: null,
@@ -35,11 +35,13 @@ const AddVideogameForm: React.FC = () => {
         ean: '',
         description: '',
         image_url: '',
-    });
+    };
 
+    const [formState, setFormState] = useState<FormState>(initialFormState);
     const [isLoading, setIsLoading] = useState(false);
     const [platformOptions, setPlatformOptions] = useState<PlatformOption[]>([]);
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const navigate = useNavigate()
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
@@ -75,7 +77,6 @@ const AddVideogameForm: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         if (!token) {
             alert('You must be logged in to add a videogame.');
             return;
@@ -87,17 +88,22 @@ const AddVideogameForm: React.FC = () => {
                 collection_id: parseInt(id || '0', 10),
             };
             await addGameToCollection(videogameData, token)
-            alert('Videogame added successfully!');
-            navigate(`/collection/${id}`);
+            setFormState(initialFormState);
+            setIsModalOpen(true);
         } catch (error) {
             console.error('Error adding videogame:', error);
-            alert('Failed to add videogame. Please try again.');
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+        if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
+            e.preventDefault();
         }
     };
 
     return (
         <FormContainer>
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
                 <div>
                     <Label htmlFor="name">Name:</Label>
                     <Input
@@ -117,7 +123,6 @@ const AddVideogameForm: React.FC = () => {
                         name="platform"
                         value={formState.platform}
                         onChange={handleChange}
-
                     >
                         <option value="">Select a platform</option>
                         {platformOptions.map((platform) => (
@@ -135,7 +140,6 @@ const AddVideogameForm: React.FC = () => {
                         name="release_year"
                         value={formState.release_year ?? ''}
                         onChange={handleChange}
-
                     />
                 </div>
                 <div>
@@ -146,30 +150,9 @@ const AddVideogameForm: React.FC = () => {
                         name="value"
                         value={formState.value ?? ''}
                         onChange={handleChange}
-
                     />
                 </div>
-                <div>
-                    <Label htmlFor="upc">UPC:</Label>
-                    <Input
-                        type="text"
-                        id="upc"
-                        name="upc"
-                        value={formState.upc}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div>
-                    <Label htmlFor="ean">EAN:</Label>
-                    <Input
-                        type="text"
-                        id="ean"
-                        name="ean"
-                        value={formState.ean}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div>
+                <div style={{ gridColumn: 'span 2' }}>
                     <Label htmlFor="description">Description:</Label>
                     <TextArea
                         id="description"
@@ -178,26 +161,31 @@ const AddVideogameForm: React.FC = () => {
                         onChange={handleChange}
                     />
                 </div>
-                <div>
-                    <Label htmlFor="image_url">Image URL:</Label>
-                    <Input
-                        type="text"
-                        id="image_url"
-                        name="image_url"
-                        value={formState.image_url}
-                        onChange={handleChange}
-                    />
-                </div>
                 {isLoading && <p>Loading game details...</p>}
                 <Button type="submit">Add Videogame</Button>
             </Form>
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                <h3>What would you like to do next?</h3>
+                <ModalOptions>
+                    <OptionButton onClick={() => setIsModalOpen(false)}>
+                        Add Another Game
+                    </OptionButton>
+                    <OptionButton onClick={() => navigate(`/collection/${id}`)}>
+                        Go to Game List
+                    </OptionButton>
+                </ModalOptions>
+            </Modal>
+
         </FormContainer>
+
     );
 };
 
 const FormContainer = styled.div`
     display: flex;
+    height: 50vh;
     flex-direction: column;
+    justify-content: center; 
     align-items: center;
     color: #ffffff;
 `;
@@ -264,6 +252,26 @@ const Button = styled.button`
     transition: background-color 0.3s;
     box-shadow: 2px 2px #000000;
     font-family: 'Press Start 2P', cursive;
+`;
+
+const ModalOptions = styled.div`
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+`;
+
+const OptionButton = styled.button`
+    padding: 10px 20px;
+    background-color: #1b9aaa;
+    color: #ffffff;
+    border: 3px solid #000000;
+    cursor: pointer;
+    font-family: 'Press Start 2P', cursive;
+    transition: background-color 0.3s;
+
+    &:hover {
+        background-color: #148d88;
+    }
 `;
 
 export default AddVideogameForm;
