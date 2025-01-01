@@ -95,9 +95,15 @@ const AddVideogameForm: React.FC = () => {
         }
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+        if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
+            e.preventDefault();
+        }
+    };
+
     return (
         <FormContainer>
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
                 <div>
                     <Label htmlFor="name">Name:</Label>
                     <Input
@@ -117,7 +123,6 @@ const AddVideogameForm: React.FC = () => {
                         name="platform"
                         value={formState.platform}
                         onChange={handleChange}
-
                     >
                         <option value="">Select a platform</option>
                         {platformOptions.map((platform) => (
@@ -135,7 +140,6 @@ const AddVideogameForm: React.FC = () => {
                         name="release_year"
                         value={formState.release_year ?? ''}
                         onChange={handleChange}
-
                     />
                 </div>
                 <div>
@@ -146,7 +150,6 @@ const AddVideogameForm: React.FC = () => {
                         name="value"
                         value={formState.value ?? ''}
                         onChange={handleChange}
-
                     />
                 </div>
                 <div>
