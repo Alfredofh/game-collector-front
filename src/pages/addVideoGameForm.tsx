@@ -24,9 +24,9 @@ type PlatformOption = {
 const AddVideogameForm: React.FC = () => {
     const { id } = useParams<{ id: string }>(); // id corresponds to the collection ID
     const { token } = useAuth(); // Obtenemos el token del contexto
-    const navigate = useNavigate();
 
-    const [formState, setFormState] = useState<FormState>({
+    // Estado inicial del formulario
+    const initialFormState: FormState = {
         name: '',
         platform: '',
         release_year: null,
@@ -35,8 +35,9 @@ const AddVideogameForm: React.FC = () => {
         ean: '',
         description: '',
         image_url: '',
-    });
+    };
 
+    const [formState, setFormState] = useState<FormState>(initialFormState);
     const [isLoading, setIsLoading] = useState(false);
     const [platformOptions, setPlatformOptions] = useState<PlatformOption[]>([]);
 
@@ -75,7 +76,6 @@ const AddVideogameForm: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         if (!token) {
             alert('You must be logged in to add a videogame.');
             return;
@@ -87,11 +87,9 @@ const AddVideogameForm: React.FC = () => {
                 collection_id: parseInt(id || '0', 10),
             };
             await addGameToCollection(videogameData, token)
-            alert('Videogame added successfully!');
-            navigate(`/collection/${id}`);
+            setFormState(initialFormState);
         } catch (error) {
             console.error('Error adding videogame:', error);
-            alert('Failed to add videogame. Please try again.');
         }
     };
 
