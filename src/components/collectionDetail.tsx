@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { getCollectionById } from '../services/collectionService';
+import { deleteGame } from '../services/gamesService';
 import { useAuth } from '../contexts/authContext';
 import { useNavigate } from 'react-router-dom';
 import SearchByGameNameForm from './searchForm';
@@ -15,7 +16,6 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
-    console.log(collection);
 
     useEffect(() => {
         const fetchCollection = async () => {
@@ -38,6 +38,21 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
         fetchCollection();
     }, [id, token]);
 
+    const handleDeleteGame = async (gameId: number) => {
+        try {
+            await deleteGame(gameId, token!);
+            setCollection((prev: any) => ({
+                ...prev,
+                video_games: prev.video_games.filter(
+                    (game: any) => game.id !== gameId
+                ),
+            }));
+            alert("Juego eliminado exitosamente.");
+        } catch (error) {
+            console.error("Error al borrar el juego:", error);
+            alert("No se pudo borrar el juego.");
+        }
+    };
     if (loading) return <Container>Cargando colección...</Container>;
     if (error) return <Container>{error}</Container>;
 
@@ -65,6 +80,9 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
                                     <Placeholder>No Image</Placeholder>
                                 )}
                             </ImageContainer>
+                            <DeleteButton onClick={() => handleDeleteGame(game.id)}>
+                                Borrar
+                            </DeleteButton>
                         </GameItem>
                     ))}
                 </GameList>
@@ -80,6 +98,22 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
 };
 
 // Styles
+const DeleteButton = styled.button`
+    background-color: transparent;
+    color: #e63946;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+
+    &:hover {
+        color: #a62030;
+    }
+
+    i {
+        font-size: 18px; // Tamaño del icono
+    }
+`;
+
 const Container = styled.div`
     max-width: 600px;
     margin: 20px auto;
