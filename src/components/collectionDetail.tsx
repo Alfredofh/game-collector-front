@@ -102,7 +102,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
                                 )}
                             </ImageContainer>
                             <DeleteButton onClick={() => handleDeleteGameClick(game.id)}>
-                                Borrar
+                                <i className="fas fa-trash-alt" />
                             </DeleteButton>
                         </GameItem>
                     ))}
