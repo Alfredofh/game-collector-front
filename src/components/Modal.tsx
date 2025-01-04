@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-import { useState, useEffect } from 'react';
+// src/components/Modal.tsx
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
 
 type ModalProps = {
     isOpen: boolean;
@@ -15,7 +15,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
         if (isOpen) {
             setIsVisible(true);
         } else {
-            const timer = setTimeout(() => setIsVisible(false), 300); // Tiempo de la animación
+            const timer = setTimeout(() => setIsVisible(false), 300);
             return () => clearTimeout(timer);
         }
     }, [isOpen]);
@@ -23,7 +23,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
     if (!isVisible) return null;
 
     return (
-        <Overlay className={isOpen ? 'fade-in' : 'fade-out'} onClick={onClose}>
+        <Overlay className={isOpen ? "fade-in" : "fade-out"} onClick={onClose}>
             <ModalContainer onClick={(e) => e.stopPropagation()}>
                 {children}
                 <CloseButton onClick={onClose}>×</CloseButton>
@@ -31,7 +31,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
         </Overlay>
     );
 };
-
 
 export default Modal;
 
@@ -59,24 +58,12 @@ const Overlay = styled.div`
 `;
 
 const ModalContainer = styled.div`
-    position: relative;
     background: #2c2c2c;
-    padding: 25px;
-    border: 1px solid #ff0d72;
+    padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
+    max-width: 500px;
     width: 100%;
-    transform: translateY(-20px);
-    transition: transform 0.3s ease-in-out;
-
-    &.fade-in {
-        transform: translateY(0);
-    }
-
-    &.fade-out {
-        transform: translateY(-20px);
-    }
+    position: relative;
 `;
 
 const CloseButton = styled.button`
