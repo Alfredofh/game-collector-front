@@ -6,16 +6,20 @@ import { deleteGame } from '../services/gamesService';
 import { useAuth } from '../contexts/authContext';
 import { useNavigate } from 'react-router-dom';
 import SearchByGameNameForm from './searchForm';
+import Modal from "./Modal";
+import useModal from "../hooks/useModal";
+
 interface CollectionDetailProps {
     collectionId: number;
 }
 const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => {
-    const { id } = useParams<{ id: string }>(); // Obtenemos el id de los parámetros de la URL
-    const { token } = useAuth(); // Obtenemos el token del contexto de autenticación
+    const { id } = useParams<{ id: string }>();
+    const { token } = useAuth();
     const [collection, setCollection] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const { isOpen, content, openModal, closeModal } = useModal();
 
     useEffect(() => {
         const fetchCollection = async () => {
@@ -38,23 +42,40 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
         fetchCollection();
     }, [id, token]);
 
-    const handleDeleteGame = async (gameId: number) => {
-        try {
-            await deleteGame(gameId, token!);
-            setCollection((prev: any) => ({
-                ...prev,
-                video_games: prev.video_games.filter(
-                    (game: any) => game.id !== gameId
-                ),
-            }));
-            alert("Juego eliminado exitosamente.");
-        } catch (error) {
-            console.error("Error al borrar el juego:", error);
-            alert("No se pudo borrar el juego.");
-        }
+    const handleDeleteGameClick = (gameId: number) => {
+        openModal(
+            <>
+                <h3>¿Estás seguro de que deseas eliminar este juego?</h3>
+                <ModalActions>
+                    <ModalButton onClick={closeModal}>Cancelar</ModalButton>
+                    <ModalButton
+                        primary
+                        onClick={async () => {
+                            try {
+                                await deleteGame(gameId, token!);
+                                setCollection((prev: any) => ({
+                                    ...prev,
+                                    video_games: prev.video_games.filter(
+                                        (game: any) => game.id !== gameId
+                                    ),
+                                }));
+                                closeModal();
+                            } catch (error) {
+                                console.error("Error al borrar el juego:", error);
+                                alert("No se pudo borrar el juego.");
+                            }
+                        }}
+                    >
+                        Eliminar
+                    </ModalButton>
+                </ModalActions>
+            </>
+        );
     };
+
     if (loading) return <Container>Cargando colección...</Container>;
     if (error) return <Container>{error}</Container>;
+
 
     return (
         <Container>
@@ -80,16 +101,20 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
                                     <Placeholder>No Image</Placeholder>
                                 )}
                             </ImageContainer>
-                            <DeleteButton onClick={() => handleDeleteGame(game.id)}>
-                                Borrar
+                            <DeleteButton onClick={() => handleDeleteGameClick(game.id)}>
+                                <i className="fas fa-trash-alt" />
                             </DeleteButton>
                         </GameItem>
                     ))}
                 </GameList>
+
             ) : (
                 <Description>No hay juegos en esta colección.</Description>
 
             )}
+            <Modal isOpen={isOpen} onClose={closeModal}>
+                {content}
+            </Modal>
             <Button onClick={() => navigate(`/collection/${collection.id}/add-videogame`)}>
                 {collection.games && collection.games.length > 0 ? 'Añadir otro juego' : 'Quieres añadir un juego?'}
             </Button>
@@ -200,6 +225,24 @@ const Button = styled.button`
     transition: background-color 0.3s;
     box-shadow: 2px 2px #000000;
     font-family: 'Press Start 2P', cursive;
+`;
+
+const ModalActions = styled.div`
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+`;
+
+const ModalButton = styled.button<{ primary?: boolean }>`
+    background-color: ${(props) => (props.primary ? "#e63946" : "#444444")};
+    color: #ffffff;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    &:hover {
+        background-color: ${(props) => (props.primary ? "#a62030" : "#333333")};
+    }
 `;
 
 export default CollectionDetail;
