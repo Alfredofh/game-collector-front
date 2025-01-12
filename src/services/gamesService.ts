@@ -19,6 +19,24 @@ export const addGameToCollection = async (payload: any, token: string) => {
 };
 
 
+export const updateGame = async (gameId: number, payload: any, token: string) => {
+    try {
+        const response = await axios.put(
+            `/api/videogames/update/${gameId}`,
+            payload, // Enviar el payload ajustado            
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Incluir el token
+                },
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error('Error al actualizar el juego:', error);
+        throw new Error('No se pudo actualizar el juego');
+    }
+}
+
 // Borrar un juego de una colección
 export const deleteGame = async (gameId: number, token: string) => {
     console.log('gameId:', gameId, 'token:', token);

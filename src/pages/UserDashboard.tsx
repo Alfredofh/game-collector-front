@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/authContext';
-import CollectionList from '../components/collectionList';
+import CollectionList from '../components/collectionsList';
 const UserDashboard: React.FC = () => {
     const { isAuthenticated, user, token } = useAuth();
     console.log("isAuthenticated", isAuthenticated);

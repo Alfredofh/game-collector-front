@@ -2,22 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { getCollectionById } from '../services/collectionService';
-import { deleteGame } from '../services/gamesService';
+import { deleteGame, updateGame } from '../services/gamesService';
 import { useAuth } from '../contexts/authContext';
 import { useNavigate } from 'react-router-dom';
 import SearchByGameNameForm from './searchForm';
 import Modal from "./Modal";
 import useModal from "../hooks/useModal";
-
+import VideogameForm from './VideoGameForm';
 interface CollectionDetailProps {
     collectionId: number;
 }
 const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => {
-    const { id } = useParams<{ id: string }>();
+    const { id } = useParams<{ id: string }>(); // Obtenemos el id de la colección de la URL
     const { token } = useAuth();
     const [collection, setCollection] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedGame, setSelectedGame] = useState<any>(null);
     const navigate = useNavigate();
     const { isOpen, content, openModal, closeModal } = useModal();
 
@@ -41,6 +42,59 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
 
         fetchCollection();
     }, [id, token]);
+
+    const handleEditGameClick = (game: any) => {
+        setSelectedGame(game);
+        console.log("game", game);
+
+        openModal(
+            <VideogameForm
+                initialFormState={{
+                    name: game.name,
+                    platform: game.platform,
+                    release_year: game.release_year,
+                    value: game.value || null,
+                    upc: game.upc || '',
+                    ean: game.ean || '',
+                    description: game.description || '',
+                    image_url: game.image_url || '',
+                }}
+                isEdit={true}
+                collectionId={collection.id}
+                onSubmit={(updatedGame) => handleUpdateGame(game.id, updatedGame)}
+            />
+        );
+    };
+
+    const handleUpdateGame = async (gameId: number, updatedGame: any) => {
+        try {
+            const payload = {
+                name: updatedGame.name,
+                platform: updatedGame.platform,
+                release_year: updatedGame.release_year,
+                value: updatedGame.value,
+                upc: updatedGame.upc || null,
+                ean: updatedGame.ean || null,
+                description: updatedGame.description || '',
+                image_url: updatedGame.image_url || '',
+                collection_id: collection.id,
+            };
+
+            const updatedGameFromAPI = await updateGame(gameId, payload, token!);
+
+            setCollection((prev: any) => ({
+                ...prev,
+                video_games: prev.video_games.map((game: any) =>
+                    game.id === gameId ? { ...game, ...updatedGameFromAPI } : game
+                ),
+            }));
+            closeModal();
+        } catch (error) {
+            console.error('Error al actualizar el juego:', error);
+        }
+    };
+
+
 
     const handleDeleteGameClick = (gameId: number) => {
         openModal(
@@ -101,9 +155,19 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
                                     <Placeholder>No Image</Placeholder>
                                 )}
                             </ImageContainer>
-                            <DeleteButton onClick={() => handleDeleteGameClick(game.id)}>
-                                <i className="fas fa-trash-alt" />
-                            </DeleteButton>
+                            <ButtonGroup>
+                                <EditButton
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEditGameClick(game);
+                                    }}
+                                >
+                                    <i className="fas fa-edit" />
+                                </EditButton>
+                                <DeleteButton onClick={() => handleDeleteGameClick(game.id)}>
+                                    <i className="fas fa-trash-alt" />
+                                </DeleteButton>
+                            </ButtonGroup>
                         </GameItem>
                     ))}
                 </GameList>
@@ -123,21 +187,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
 };
 
 // Styles
-const DeleteButton = styled.button`
-    background-color: transparent;
-    color: #e63946;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
 
-    &:hover {
-        color: #a62030;
-    }
-
-    i {
-        font-size: 18px; // Tamaño del icono
-    }
-`;
 
 const Container = styled.div`
     max-width: 600px;
@@ -243,6 +293,45 @@ const ModalButton = styled.button<{ primary?: boolean }>`
     &:hover {
         background-color: ${(props) => (props.primary ? "#a62030" : "#333333")};
     }
+`;
+
+const DeleteButton = styled.button`
+    background-color: transparent;
+    color: #e63946;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+
+    &:hover {
+        color: #a62030;
+    }
+
+    i {
+        font-size: 18px; 
+    }
+`;
+
+const EditButton = styled.button`
+    background-color: transparent;
+    color: #1b9aaa;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 8px;
+
+    &:hover {
+        color: #148a8a;
+    }
+
+    i {
+        font-size: 18px; // Tamaño del icono
+    }
+`;
+
+const ButtonGroup = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 10px; // Espaciado entre botones
 `;
 
 export default CollectionDetail;

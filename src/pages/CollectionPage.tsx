@@ -2,7 +2,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import CollectionDetail from '../components/collectionDetail';
+import CollectionDetail from '../components/collectionDetails';
 
 const PageContainer = styled.div`
     max-width: 800px;
