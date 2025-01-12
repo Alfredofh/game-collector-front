@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { getCollectionById } from '../services/collectionService';
-import { deleteGame } from '../services/gamesService';
+import { deleteGame, updateGame } from '../services/gamesService';
 import { useAuth } from '../contexts/authContext';
 import { useNavigate } from 'react-router-dom';
 import SearchByGameNameForm from './searchForm';
@@ -66,15 +66,35 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
         );
     };
 
-    const handleUpdateGame = (gameId: number, updatedGame: any) => {
-        setCollection((prev: any) => ({
-            ...prev,
-            video_games: prev.video_games.map((game: any) =>
-                game.id === gameId ? { ...game, ...updatedGame } : game
-            ),
-        }));
-        closeModal();
+    const handleUpdateGame = async (gameId: number, updatedGame: any) => {
+        try {
+            const payload = {
+                name: updatedGame.name,
+                platform: updatedGame.platform,
+                release_year: updatedGame.release_year,
+                value: updatedGame.value,
+                upc: updatedGame.upc || null,
+                ean: updatedGame.ean || null,
+                description: updatedGame.description || '',
+                image_url: updatedGame.image_url || '',
+                collection_id: collection.id,
+            };
+
+            const updatedGameFromAPI = await updateGame(gameId, payload, token!);
+
+            setCollection((prev: any) => ({
+                ...prev,
+                video_games: prev.video_games.map((game: any) =>
+                    game.id === gameId ? { ...game, ...updatedGameFromAPI } : game
+                ),
+            }));
+            closeModal();
+        } catch (error) {
+            console.error('Error al actualizar el juego:', error);
+        }
     };
+
+
 
     const handleDeleteGameClick = (gameId: number) => {
         openModal(
