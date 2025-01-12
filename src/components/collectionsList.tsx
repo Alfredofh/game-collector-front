@@ -1,4 +1,3 @@
-// src/components/CollectionList.tsx
 import React, { useEffect, useState } from "react";
 import { getCollections, updateCollection, deleteCollection } from "../services/collectionService";
 import { useNavigate } from "react-router-dom";
