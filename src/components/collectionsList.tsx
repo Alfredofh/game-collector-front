@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { getCollections, updateCollection, deleteCollection } from "../services/collectionService";
+import { getCollections, deleteCollection } from "../services/collectionService";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Modal from "./Modal";
 import useModal from "../hooks/useModal";
-
+import EditCollectionModal from "./EditCollectionModal";
 interface Collection {
     id: number;
     name: string;
@@ -18,8 +18,6 @@ interface CollectionListProps {
 
 const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
     const [collections, setCollections] = useState<Collection[]>([]);
-    const [newName, setNewName] = useState<string>("");
-    const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
     const { isOpen, content, openModal, closeModal } = useModal();
     const navigate = useNavigate();
 
@@ -37,45 +35,23 @@ const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
     }, [token]);
 
     const handleEditClick = (collection: Collection) => {
-        setSelectedCollection(collection);
-        setNewName(collection.name);
-
         openModal(
-            <>
-                <h3>Editar Colección</h3>
-                <Input
-                    type="text"
-                    value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
-                />
-                <ModalActions>
-                    <ModalButton onClick={closeModal}>Cancelar</ModalButton>
-                    <ModalButton
-                        primary
-                        onClick={async () => {
-                            if (!selectedCollection) return;
-                            try {
-                                await updateCollection(selectedCollection.id, { name: newName }, token);
-                                setCollections((prev) =>
-                                    prev.map((item) =>
-                                        item.id === selectedCollection.id
-                                            ? { ...item, name: newName }
-                                            : item
-                                    )
-                                );
-                                closeModal();
-                            } catch (error) {
-                                console.error("Error updating collection:", error);
-                                alert("No se pudo actualizar la colección.");
-                            }
-                        }}
-                    >
-                        Guardar
-                    </ModalButton>
-                </ModalActions>
-            </>
+            <EditCollectionModal
+                collection={collection} // Pasamos la colección seleccionada
+                token={token} // Pasamos el token para las peticiones
+                onUpdate={(updatedName) => {
+                    // Callback para actualizar el estado en CollectionList
+                    setCollections((prev) =>
+                        prev.map((item) =>
+                            item.id === collection.id ? { ...item, name: updatedName } : item
+                        )
+                    );
+                }}
+                onClose={closeModal} // Callback para cerrar el modal
+            />
         );
     };
+
 
     const handleDeleteClick = (collection: Collection) => {
         openModal(
