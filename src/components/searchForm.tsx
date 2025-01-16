@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { searchGamesByName } from '../services/searchGamesIGDB';
 import { addGameToCollection } from '../services/gamesService';
 import { useAuth } from '../contexts/authContext';
-
+import { useNotification } from '../contexts/NotificationContext';
 interface SearchByGameNameFormProps {
     collectionId: number;
 }
@@ -13,6 +13,8 @@ const SearchByGameNameForm: React.FC<SearchByGameNameFormProps> = ({ collectionI
     const [error, setError] = useState<string | null>(null);
     const [results, setResults] = useState<any[]>([]);
     const { token } = useAuth();
+    const { addNotification } = useNotification();
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null); // Limpiar el error antes de iniciar la búsqueda
@@ -55,9 +57,12 @@ const SearchByGameNameForm: React.FC<SearchByGameNameFormProps> = ({ collectionI
             };
 
             await addGameToCollection(payload, token);
+            addNotification(`"${game.name}" se añadió a tu colección con éxito.`, 'success');
+
         } catch (error) {
             console.error('Error al añadir juego a la colección:', error);
-            setError('Error al añadir juego a la colección. Inténtalo nuevamente.');
+            addNotification('Hubo un error al añadir el juego a la colección.', 'error');
+
         }
     };
 

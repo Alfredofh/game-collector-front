@@ -11,25 +11,28 @@ import CreateCollectionPage from './pages/CreateCollectionPage';
 import SearchPage from './pages/BarcodeScannerPage';
 import CollectionPage from './pages/CollectionPage';
 import AddVideogameForm from './pages/addVideoGameForm';
+import { NotificationProvider } from './contexts/NotificationContext';
 const App: React.FC = () => {
     return (
         <>
-            <GlobalStyles />
-            <AuthProvider>
-                <Router>
-                    <NavBar />
-                    <Routes>
-                        <Route path="/register" element={<RegisterForm />} />
-                        <Route path="/login" element={<LoginForm />} />
-                        <Route path="/dashboard" element={<UserDashboard />} />
-                        <Route path="/logout" element={<Logout />} />
-                        <Route path="/collection/new" element={<CreateCollectionPage />} />
-                        <Route path="/scanner" element={<SearchPage />} />
-                        <Route path="/collection/:id" element={<CollectionPage />} />
-                        <Route path="/collection/:id/add-videogame" element={<AddVideogameForm />} />
-                    </Routes>
-                </Router>
-            </AuthProvider>
+            <NotificationProvider>
+                <GlobalStyles />
+                <AuthProvider>
+                    <Router>
+                        <NavBar />
+                        <Routes>
+                            <Route path="/register" element={<RegisterForm />} />
+                            <Route path="/login" element={<LoginForm />} />
+                            <Route path="/dashboard" element={<UserDashboard />} />
+                            <Route path="/logout" element={<Logout />} />
+                            <Route path="/collection/new" element={<CreateCollectionPage />} />
+                            <Route path="/scanner" element={<SearchPage />} />
+                            <Route path="/collection/:id" element={<CollectionPage />} />
+                            <Route path="/collection/:id/add-videogame" element={<AddVideogameForm />} />
+                        </Routes>
+                    </Router>
+                </AuthProvider>
+            </NotificationProvider>
         </>
     );
 };
