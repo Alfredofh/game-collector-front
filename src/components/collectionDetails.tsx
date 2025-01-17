@@ -13,7 +13,7 @@ interface CollectionDetailProps {
     collectionId: number;
 }
 const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => {
-    const { id } = useParams<{ id: string }>(); // Obtenemos el id de la colección de la URL
+    const { id } = useParams<{ id: string }>();
     const { token } = useAuth();
     const [collection, setCollection] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -135,8 +135,6 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
         <Container>
             <Title>{collection.name}</Title>
             <Description>Creada el: {new Date(collection.created_at).toLocaleDateString()}</Description>
-            <Title>Busca tu juego y añádelo en 1 click</Title>
-            <SearchByGameNameForm collectionId={collection.id} />
             {collection.video_games && collection.video_games.length > 0 ? (
                 <GameList>
                     {collection.video_games.map((game: any) => (
@@ -179,6 +177,8 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
             <Modal isOpen={isOpen} onClose={closeModal}>
                 {content}
             </Modal>
+            <Title>Usa el buscador y añade en 1 click o añade tus datos</Title>
+            <SearchByGameNameForm collectionId={collection.id} />
             <Button onClick={() => navigate(`/collection/${collection.id}/add-videogame`)}>
                 {collection.games && collection.games.length > 0 ? 'Añadir otro juego' : 'Quieres añadir un juego?'}
             </Button>
@@ -190,7 +190,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
 
 
 const Container = styled.div`
-    max-width: 600px;
+    max-width: 1200px;
     margin: 20px auto;
     padding: 20px;
     background-color: #3c3c3c;
@@ -200,8 +200,8 @@ const Container = styled.div`
 `;
 
 const Title = styled.h1`
-    font-size: 24px;
-    margin-bottom: 10px;
+    font-size: 18px;
+    padding: 10px; 
     text-align: center;
 `;
 
@@ -217,6 +217,7 @@ const GameList = styled.ul`
 `;
 
 const GameItem = styled.li`
+    min-height: 140px;
     background-color: #1e1e1e;
     color: #ffffff;
     margin-bottom: 15px;
@@ -224,18 +225,27 @@ const GameItem = styled.li`
     border: 3px solid #000000;
     box-shadow: 2px 2px #000000;
     font-family: 'Roboto Mono', monospace;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 15px;
+    justify-items: center;
     align-items: center;
+
+    &:nth-child(4n) {
+        justify-self: end; 
+    }
 `;
+;
 
 const GameName = styled.span`
+    text-transform: uppercase;
     font-size: 16px;
 `;
 
 const GameDetails = styled.span`
     font-size: 13px;
     color: #aaaaaa;
+    max-width: 200px;
 `;
 
 const ImageContainer = styled.div`
@@ -249,7 +259,7 @@ const ImageContainer = styled.div`
 const GameImage = styled.img`
     max-height: 100%; 
     width: auto;
-    object-fit: contain; /
+    object-fit: contain; 
 `;
 
 const Placeholder = styled.div`
@@ -307,7 +317,7 @@ const DeleteButton = styled.button`
     }
 
     i {
-        font-size: 18px; 
+        font-size: 22px; 
     }
 `;
 
@@ -324,14 +334,14 @@ const EditButton = styled.button`
     }
 
     i {
-        font-size: 18px; // Tamaño del icono
+        font-size: 22px; 
     }
 `;
 
 const ButtonGroup = styled.div`
     display: flex;
-    align-items: center;
-    gap: 10px; // Espaciado entre botones
+    align-items: right;
+    gap: 10px; 
 `;
 
 export default CollectionDetail;

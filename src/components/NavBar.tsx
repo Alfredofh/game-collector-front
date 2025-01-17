@@ -15,7 +15,7 @@ const NavBar: React.FC = () => {
                 {isAuthenticated ? (
                     <>
                         <NavItem>
-                            <StyledLink to="/collection">My Collections</StyledLink>
+                            <StyledLink to="/collections">My Collections</StyledLink>
                         </NavItem>
                         <NavItem>
                             <StyledLink to="/collection/new">New Collection</StyledLink>

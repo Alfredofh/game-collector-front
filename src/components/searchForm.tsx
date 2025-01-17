@@ -70,7 +70,6 @@ const SearchByGameNameForm: React.FC<SearchByGameNameFormProps> = ({ collectionI
         <FormContainer>
             <Form onSubmit={handleSubmit}>
                 <div>
-                    <Label htmlFor="name">Busca juegos por nombre</Label>
                     <Input
                         type="text"
                         id="name"
@@ -122,23 +121,18 @@ const FormContainer = styled.div`
     flex-direction: column;
     align-items: center;
     color: #ffffff;
+    padding: 20px;
 `;
 
 
 const Form = styled.form`
-    max-width: 400px;
+    max-width: 600px;
     padding: 20px;
     background-color: #3c3c3c;
     border: 4px solid #000000;
     box-shadow: 5px 5px #000000;
 `;
 
-
-const Label = styled.label`
-    display: block;
-    margin-bottom: 5px;
-    font-size: 16px;
-`;
 
 const Input = styled.input` 
     width: 100%;
