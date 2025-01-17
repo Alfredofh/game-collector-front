@@ -1,31 +1,30 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/authContext';
-import CollectionList from '../components/collectionsList';
-const UserDashboard: React.FC = () => {
-    const { isAuthenticated, user, token } = useAuth();
-    console.log("isAuthenticated", isAuthenticated);
-    console.log("user", user);
 
-    const navigate = useNavigate();
-
-    React.useEffect(() => {
-        if (!isAuthenticated) {
-            navigate('/login'); // Redirigir al login si no está autenticado
-        }
-    }, [isAuthenticated, navigate]);
-
-    if (!isAuthenticated) {
-        return null;
-    }
+const Dashboard: React.FC = () => {
+    const { isAuthenticated, user } = useAuth();
 
     return (
         <div>
-            <h1>User Dashboard</h1>
-            <p>Welcome, {user?.email}!</p>
-            <CollectionList token={token || ''} />
+            {isAuthenticated ? (
+                <div>
+                    <h1>Welcome back, {user?.email}!</h1>
+                    <p>Here are your collections and recent activities:</p>
+                    {/* Aquí puedes añadir componentes personalizados para el usuario logueado */}
+                    <Link to="/collection">View My Collections</Link>
+                </div>
+            ) : (
+                <div>
+                    <h1>Welcome to Game Collections App!</h1>
+                    <p>Manage your game collections, track prices, and find new titles.</p>
+                    <div>
+                        <Link to="/register">Create an Account</Link> or <Link to="/login">Log In</Link>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
 
-export default UserDashboard;
+export default Dashboard;
