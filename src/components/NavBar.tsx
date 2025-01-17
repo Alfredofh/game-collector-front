@@ -1,19 +1,19 @@
-// src/components/NavBar.tsx
-import React, { useContext } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAuth } from '../contexts/authContext';
 
 const NavBar: React.FC = () => {
     const { isAuthenticated, logout } = useAuth();
+
     return (
         <Nav>
             <NavList>
+                <NavItem>
+                    <StyledLink to="/dashboard">Home</StyledLink>
+                </NavItem>
                 {isAuthenticated ? (
                     <>
-                        <NavItem>
-                            <StyledLink to="/dashboard">Home</StyledLink>
-                        </NavItem>
                         <NavItem>
                             <StyledLink to="/collection">My Collections</StyledLink>
                         </NavItem>
@@ -86,6 +86,5 @@ const StyledButton = styled.button`
         color: #1b9aaa;
     }
 `;
-
 
 export default NavBar;

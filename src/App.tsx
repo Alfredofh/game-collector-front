@@ -24,7 +24,7 @@ const App: React.FC = () => {
                         <Routes>
                             <Route path="/register" element={<RegisterForm />} />
                             <Route path="/login" element={<LoginForm />} />
-                            <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /> </ProtectedRoute>} />
+                            <Route path="/dashboard" element={<UserDashboard />} />
                             <Route path="/logout" element={<Logout />} />
                             <Route path="/collection/new" element={<ProtectedRoute><CreateCollectionPage /></ProtectedRoute>} />
                             <Route path="/scanner" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
