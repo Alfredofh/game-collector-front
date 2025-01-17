@@ -183,7 +183,7 @@ const EditButton = styled.button`
     }
 
     i {
-        font-size: 18px; // Tamaño del icono
+        font-size: 20px; // Tamaño del icono
     }
 `;
 
@@ -199,7 +199,7 @@ const DeleteButton = styled.button`
     }
 
     i {
-        font-size: 18px; // Tamaño del icono
+        font-size: 20px; // Tamaño del icono
     }
 `;
 

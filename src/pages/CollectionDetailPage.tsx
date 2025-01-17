@@ -10,7 +10,6 @@ const CollectionDetailPage: React.FC = () => {
 
     return (
         <PageContainer>
-            <h1>Detalle de la Colección</h1>
             <CollectionDetail collectionId={parseInt(id, 10)} />
         </PageContainer>
     );
