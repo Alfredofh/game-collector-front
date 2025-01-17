@@ -9,10 +9,11 @@ import { AuthProvider } from './contexts/authContext';
 import NavBar from './components/NavBar';
 import CreateCollectionPage from './pages/CreateCollectionPage';
 import SearchPage from './pages/BarcodeScannerPage';
-import CollectionPage from './pages/CollectionPage';
+import CollectionsPage from './pages/CollectionsPage';
 import AddVideogameForm from './pages/addVideoGameForm';
 import { NotificationProvider } from './contexts/NotificationContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import CollectionDetailPage from './pages/CollectionDetailPage';
 const App: React.FC = () => {
     return (
         <>
@@ -28,7 +29,8 @@ const App: React.FC = () => {
                             <Route path="/logout" element={<Logout />} />
                             <Route path="/collection/new" element={<ProtectedRoute><CreateCollectionPage /></ProtectedRoute>} />
                             <Route path="/scanner" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
-                            <Route path="/collection/" element={<ProtectedRoute><CollectionPage /></ProtectedRoute>} />
+                            <Route path="/collections/" element={<ProtectedRoute><CollectionsPage /></ProtectedRoute>} />
+                            <Route path="/collection/:id/" element={<ProtectedRoute><CollectionDetailPage /></ProtectedRoute>} />
                             <Route path="/collection/:id/add-videogame" element={<ProtectedRoute><AddVideogameForm /></ProtectedRoute>} />
                         </Routes>
                     </Router>

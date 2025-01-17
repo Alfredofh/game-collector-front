@@ -12,7 +12,7 @@ const Dashboard: React.FC = () => {
                     <h1>Welcome back, {user?.email}!</h1>
                     <p>Here are your collections and recent activities:</p>
                     {/* Aquí puedes añadir componentes personalizados para el usuario logueado */}
-                    <Link to="/collection">View My Collections</Link>
+                    <Link to="/collections">View My Collections</Link>
                 </div>
             ) : (
                 <div>

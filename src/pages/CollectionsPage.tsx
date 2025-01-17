@@ -1,17 +1,11 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import CollectionList from '../components/collectionsList';
 import { useAuth } from '../contexts/authContext';
 import { useNavigate } from 'react-router-dom';
 
-
-
-
-const CollectionPage: React.FC = () => {
+const CollectionsPage: React.FC = () => {
     const { isAuthenticated, user, token } = useAuth();
-    console.log("isAuthenticated", isAuthenticated);
-    console.log("user", user);
 
     const navigate = useNavigate();
 
@@ -41,4 +35,4 @@ const PageContainer = styled.div`
     color: #ffffff;
 `;
 
-export default CollectionPage;
+export default CollectionsPage;
