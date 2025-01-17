@@ -28,7 +28,7 @@ const App: React.FC = () => {
                             <Route path="/logout" element={<Logout />} />
                             <Route path="/collection/new" element={<ProtectedRoute><CreateCollectionPage /></ProtectedRoute>} />
                             <Route path="/scanner" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
-                            <Route path="/collection/:id" element={<ProtectedRoute><CollectionPage /></ProtectedRoute>} />
+                            <Route path="/collection/" element={<ProtectedRoute><CollectionPage /></ProtectedRoute>} />
                             <Route path="/collection/:id/add-videogame" element={<ProtectedRoute><AddVideogameForm /></ProtectedRoute>} />
                         </Routes>
                     </Router>
