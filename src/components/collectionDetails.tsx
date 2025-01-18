@@ -9,6 +9,7 @@ import SearchByGameNameForm from './searchForm';
 import Modal from "./Modal";
 import useModal from "../hooks/useModal";
 import VideogameForm from './VideoGameForm';
+import { useNotification } from '../contexts/NotificationContext';
 interface CollectionDetailProps {
     collectionId: number;
 }
@@ -21,6 +22,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
     const [selectedGame, setSelectedGame] = useState<any>(null);
     const navigate = useNavigate();
     const { isOpen, content, openModal, closeModal } = useModal();
+    const { addNotification } = useNotification();
 
     useEffect(() => {
         const fetchCollection = async () => {
@@ -88,9 +90,11 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
                     game.id === gameId ? { ...game, ...updatedGameFromAPI } : game
                 ),
             }));
+            addNotification(`${payload.name} actualizado correctamente`, 'success');
             closeModal();
         } catch (error) {
             console.error('Error al actualizar el juego:', error);
+            addNotification('Error al actualizar el juego. Por favor, inténtalo de nuevo.', 'error');
         }
     };
 
