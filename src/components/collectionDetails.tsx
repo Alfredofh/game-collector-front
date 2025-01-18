@@ -111,6 +111,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
                         onClick={async () => {
                             try {
                                 await deleteGame(gameId, token!);
+                                addNotification("Juego eliminado correctamente", "success");
                                 setCollection((prev: any) => ({
                                     ...prev,
                                     video_games: prev.video_games.filter(
@@ -120,7 +121,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
                                 closeModal();
                             } catch (error) {
                                 console.error("Error al borrar el juego:", error);
-                                alert("No se pudo borrar el juego.");
+                                addNotification("Error al borrar el juego. Por favor, inténtalo de nuevo.", "error");
                             }
                         }}
                     >
