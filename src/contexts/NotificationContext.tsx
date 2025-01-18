@@ -29,7 +29,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
         setNotifications((prev) => [...prev, { id, message, type }]);
         setTimeout(() => {
             setNotifications((prev) => prev.filter((notif) => notif.id !== id));
-        }, 3000); // Eliminar la notificación después de 3 segundos
+        }, 3000);
     };
 
     return (
