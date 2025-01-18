@@ -180,7 +180,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
             <Title>Usa el buscador y añade en 1 click o añade tus datos</Title>
             <SearchByGameNameForm collectionId={collection.id} />
             <Button onClick={() => navigate(`/collection/${collection.id}/add-videogame`)}>
-                {collection.games && collection.games.length > 0 ? 'Añadir otro juego' : 'Quieres añadir un juego?'}
+                {collection.video_games && collection.video_games.length > 0 ? 'Añadir otro juego' : 'Quieres añadir un juego?'}
             </Button>
         </Container>
     );
