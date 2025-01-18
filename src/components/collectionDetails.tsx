@@ -45,6 +45,16 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
         fetchCollection();
     }, [id, token]);
 
+    const handleGameAdded = async () => {
+        try {
+            const updatedCollection = await getCollectionById(collection.id, token!);
+            setCollection(updatedCollection);
+        } catch (error) {
+            console.error('Error al actualizar la colección:', error);
+        }
+    };
+
+
     const handleEditGameClick = (game: any) => {
         setSelectedGame(game);
         console.log("game", game);
@@ -183,7 +193,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
                 {content}
             </Modal>
             <Title>Usa el buscador y añade en 1 click o añade tus datos</Title>
-            <SearchByGameNameForm collectionId={collection.id} />
+            <SearchByGameNameForm collectionId={collection.id} onGameAdded={handleGameAdded} />
             <Button onClick={() => navigate(`/collection/${collection.id}/add-videogame`)}>
                 {collection.video_games && collection.video_games.length > 0 ? 'Añadir otro juego' : 'Quieres añadir un juego?'}
             </Button>

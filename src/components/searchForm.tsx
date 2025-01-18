@@ -6,9 +6,10 @@ import { useAuth } from '../contexts/authContext';
 import { useNotification } from '../contexts/NotificationContext';
 interface SearchByGameNameFormProps {
     collectionId: number;
+    onGameAdded: () => void;
 }
 
-const SearchByGameNameForm: React.FC<SearchByGameNameFormProps> = ({ collectionId }) => {
+const SearchByGameNameForm: React.FC<SearchByGameNameFormProps> = ({ collectionId, onGameAdded }) => {
     const [name, setName] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [results, setResults] = useState<any[]>([]);
@@ -17,8 +18,8 @@ const SearchByGameNameForm: React.FC<SearchByGameNameFormProps> = ({ collectionI
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(null); // Limpiar el error antes de iniciar la búsqueda
-        setResults([]); // Limpiar resultados previos
+        setError(null);
+        setResults([]);
 
         if (!name) {
             setError('El nombre del juego es obligatorio');
@@ -27,7 +28,7 @@ const SearchByGameNameForm: React.FC<SearchByGameNameFormProps> = ({ collectionI
 
         try {
             const response = await searchGamesByName(name);
-            setResults(response); // Guardar los resultados en el estado
+            setResults(response);
         } catch (error) {
             setError('Error al buscar juegos. Inténtalo nuevamente.');
             console.error('Error al buscar juego:', error);
@@ -56,9 +57,11 @@ const SearchByGameNameForm: React.FC<SearchByGameNameFormProps> = ({ collectionI
                 collection_id: collectionId,
             };
 
-            await addGameToCollection(payload, token);
+            const newGame = await addGameToCollection(payload, token);
             addNotification(`"${game.name}" se añadió a tu colección con éxito.`, 'success');
-
+            onGameAdded();
+            setResults([]);
+            setName('');
         } catch (error) {
             console.error('Error al añadir juego a la colección:', error);
             addNotification('Hubo un error al añadir el juego a la colección.', 'error');
@@ -82,7 +85,6 @@ const SearchByGameNameForm: React.FC<SearchByGameNameFormProps> = ({ collectionI
 
             {error && <Message>{error}</Message>}
 
-            {/* Mostrar resultados */}
             {results.length > 0 && (
                 <ResultsGrid>
                     {results.map((game) => (
