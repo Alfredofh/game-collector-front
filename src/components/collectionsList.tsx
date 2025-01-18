@@ -39,17 +39,17 @@ const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
     const handleEditClick = (collection: Collection) => {
         openModal(
             <EditCollectionModal
-                collection={collection} // Pasamos la colección seleccionada
-                token={token} // Pasamos el token para las peticiones
+                collection={collection}
+                token={token}
                 onUpdate={(updatedName) => {
-                    // Callback para actualizar el estado en CollectionList
                     setCollections((prev) =>
                         prev.map((item) =>
                             item.id === collection.id ? { ...item, name: updatedName } : item
                         )
                     );
+                    addNotification(`Colección "${updatedName}" actualizada con éxito`, "success");
                 }}
-                onClose={closeModal} // Callback para cerrar el modal
+                onClose={closeModal}
             />
         );
     };
