@@ -148,17 +148,19 @@ const VideogameForm: React.FC<VideogameFormProps> = ({
                 {isLoading && <p>Loading game details...</p>}
                 {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
             </Form>
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                <h3>What would you like to do next?</h3>
-                <ModalOptions>
-                    <OptionButton onClick={() => setIsModalOpen(false)}>
-                        Add Another Game
-                    </OptionButton>
-                    <OptionButton onClick={() => navigate(`/collection/${collectionId}`)}>
-                        Go to Game List
-                    </OptionButton>
-                </ModalOptions>
-            </Modal>
+            {!isEdit && (
+                <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                    <h3>What would you like to do next?</h3>
+                    <ModalOptions>
+                        <OptionButton onClick={() => setIsModalOpen(false)}>
+                            Add Another Game
+                        </OptionButton>
+                        <OptionButton onClick={() => navigate(`/collection/${collectionId}`)}>
+                            Go to Game List
+                        </OptionButton>
+                    </ModalOptions>
+                </Modal>
+            )}
         </FormContainer>
     );
 };

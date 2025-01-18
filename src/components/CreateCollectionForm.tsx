@@ -2,17 +2,14 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { createCollection } from '../services/collectionService';
+import { useNotification } from '../contexts/NotificationContext';
 
-interface CreateCollectionFormProps {
-    onCollectionCreated: (message: string) => void;
-}
 
-const CreateCollectionForm: React.FC<CreateCollectionFormProps> = ({ onCollectionCreated }) => {
+const CreateCollectionForm: React.FC = () => {
     const [name, setName] = useState('');
     const [error, setError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const navigate = useNavigate();
-
+    const { addNotification } = useNotification();
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -29,10 +26,8 @@ const CreateCollectionForm: React.FC<CreateCollectionFormProps> = ({ onCollectio
 
         try {
             const response = await createCollection({ name }, token);
-            setSuccessMessage(response.message);
-            onCollectionCreated(response.message);
-
-            setTimeout(() => navigate('/collection'), 2000);
+            addNotification(`Colección "${name}" creada con éxito`, 'success');
+            setTimeout(() => navigate('/collections'), 2000);
         } catch (error: any) {
             setError('Error al crear la colección');
             console.error('Error al crear colección:', error);
@@ -53,8 +48,6 @@ const CreateCollectionForm: React.FC<CreateCollectionFormProps> = ({ onCollectio
                 </div>
                 <Button type="submit">Create</Button>
             </Form>
-            {error && <Message>{error}</Message>}
-            {successMessage && <Message success>{successMessage}</Message>}
         </FormContainer>
     );
 };
@@ -104,14 +97,6 @@ const Button = styled.button`
     &:hover {
         background-color: #148a8a;
     }
-`;
-
-const Message = styled.p<{ success?: boolean }>`
-    color: ${(props) => (props.success ? '#3be13b' : '#ff0d72')};
-    font-size: 16px;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 20px;
 `;
 
 export default CreateCollectionForm;

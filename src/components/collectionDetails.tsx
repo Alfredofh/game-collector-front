@@ -9,6 +9,7 @@ import SearchByGameNameForm from './searchForm';
 import Modal from "./Modal";
 import useModal from "../hooks/useModal";
 import VideogameForm from './VideoGameForm';
+import { useNotification } from '../contexts/NotificationContext';
 interface CollectionDetailProps {
     collectionId: number;
 }
@@ -21,6 +22,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
     const [selectedGame, setSelectedGame] = useState<any>(null);
     const navigate = useNavigate();
     const { isOpen, content, openModal, closeModal } = useModal();
+    const { addNotification } = useNotification();
 
     useEffect(() => {
         const fetchCollection = async () => {
@@ -42,6 +44,16 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
 
         fetchCollection();
     }, [id, token]);
+
+    const handleGameAdded = async () => {
+        try {
+            const updatedCollection = await getCollectionById(collection.id, token!);
+            setCollection(updatedCollection);
+        } catch (error) {
+            console.error('Error al actualizar la colección:', error);
+        }
+    };
+
 
     const handleEditGameClick = (game: any) => {
         setSelectedGame(game);
@@ -88,9 +100,11 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
                     game.id === gameId ? { ...game, ...updatedGameFromAPI } : game
                 ),
             }));
+            addNotification(`${payload.name} actualizado correctamente`, 'success');
             closeModal();
         } catch (error) {
             console.error('Error al actualizar el juego:', error);
+            addNotification('Error al actualizar el juego. Por favor, inténtalo de nuevo.', 'error');
         }
     };
 
@@ -107,6 +121,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
                         onClick={async () => {
                             try {
                                 await deleteGame(gameId, token!);
+                                addNotification("Juego eliminado correctamente", "success");
                                 setCollection((prev: any) => ({
                                     ...prev,
                                     video_games: prev.video_games.filter(
@@ -116,7 +131,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
                                 closeModal();
                             } catch (error) {
                                 console.error("Error al borrar el juego:", error);
-                                alert("No se pudo borrar el juego.");
+                                addNotification("Error al borrar el juego. Por favor, inténtalo de nuevo.", "error");
                             }
                         }}
                     >
@@ -178,7 +193,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
                 {content}
             </Modal>
             <Title>Usa el buscador y añade en 1 click o añade tus datos</Title>
-            <SearchByGameNameForm collectionId={collection.id} />
+            <SearchByGameNameForm collectionId={collection.id} onGameAdded={handleGameAdded} />
             <Button onClick={() => navigate(`/collection/${collection.id}/add-videogame`)}>
                 {collection.video_games && collection.video_games.length > 0 ? 'Añadir otro juego' : 'Quieres añadir un juego?'}
             </Button>

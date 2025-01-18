@@ -5,6 +5,7 @@ import styled from "styled-components";
 import Modal from "./Modal";
 import useModal from "../hooks/useModal";
 import EditCollectionModal from "./EditCollectionModal";
+import { useNotification } from "../contexts/NotificationContext";
 interface Collection {
     id: number;
     name: string;
@@ -20,6 +21,7 @@ const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
     const [collections, setCollections] = useState<Collection[]>([]);
     const { isOpen, content, openModal, closeModal } = useModal();
     const navigate = useNavigate();
+    const { addNotification } = useNotification();
 
     useEffect(() => {
         const fetchCollections = async () => {
@@ -37,17 +39,17 @@ const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
     const handleEditClick = (collection: Collection) => {
         openModal(
             <EditCollectionModal
-                collection={collection} // Pasamos la colección seleccionada
-                token={token} // Pasamos el token para las peticiones
+                collection={collection}
+                token={token}
                 onUpdate={(updatedName) => {
-                    // Callback para actualizar el estado en CollectionList
                     setCollections((prev) =>
                         prev.map((item) =>
                             item.id === collection.id ? { ...item, name: updatedName } : item
                         )
                     );
+                    addNotification(`Colección "${updatedName}" actualizada con éxito`, "success");
                 }}
-                onClose={closeModal} // Callback para cerrar el modal
+                onClose={closeModal}
             />
         );
     };
@@ -65,13 +67,17 @@ const CollectionList: React.FC<CollectionListProps> = ({ token }) => {
                         onClick={async () => {
                             try {
                                 await deleteCollection(collection.id, token);
+                                addNotification(
+                                    `Colección "${collection.name}" eliminada con éxito`,
+                                    "success"
+                                );
                                 setCollections((prev) =>
                                     prev.filter((item) => item.id !== collection.id)
                                 );
                                 closeModal();
                             } catch (error) {
                                 console.error("Error deleting collection:", error);
-                                alert("No se pudo borrar la colección.");
+                                addNotification("Error al eliminar la colección", "error");
                             }
                         }}
                     >
