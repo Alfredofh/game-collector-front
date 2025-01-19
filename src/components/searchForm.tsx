@@ -107,7 +107,9 @@ const SearchByGameNameForm: React.FC<SearchByGameNameFormProps> = ({ collectionI
                                         : 'No description available.'}
                                 </GameDescription>
                             </CardContent>
-                            <Button onClick={() => handleAddToCollection(game)}>Añadir a mi colección</Button>
+                            {collectionId && (
+                                <Button onClick={() => handleAddToCollection(game)}>Añadir a mi colección</Button>
+                            )}
                         </Card>
                     ))}
                 </ResultsGrid>
