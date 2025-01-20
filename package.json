@@ -49,9 +49,11 @@
     ]
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
+    "@types/node": "^22.10.7",
     "@types/react-router-dom": "^5.3.3",
     "@types/styled-components": "^5.1.34",
-    "vite-tsconfig-paths": "^5.1.4"
+    "jsdom": "^26.0.0",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.0.2"
   }
 }
