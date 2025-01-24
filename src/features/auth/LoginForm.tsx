@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../services/userServices';
-import { useAuth } from '../contexts/authContext';
+import { loginUser } from '../../services/userServices';
+import { useAuth } from '../../contexts/authContext';
 const LoginForm: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

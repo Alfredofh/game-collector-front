@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import BarcodeScanner from '../components/BarcodeScanner';
+import BarcodeScanner from '../features/games/BarcodeScanner';
 import SearchByGameNameForm from '../components/searchForm';
 const SearchPage: React.FC = () => {
     const navigate = useNavigate();

@@ -198,9 +198,9 @@ const ImageContainer = styled.div`
 `;
 
 const GameImage = styled.img`
-    max-height: 100%; /* Limita la altura para evitar pixelado */
-    width: auto; /* Mantiene las proporciones originales */
-    object-fit: contain; /* Ajusta la imagen dentro del contenedor sin recortar */
+    max-height: 100%; 
+    width: auto;
+    object-fit: contain; 
 `;
 
 const Placeholder = styled.div`

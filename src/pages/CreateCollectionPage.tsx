@@ -1,5 +1,5 @@
 import React from 'react';
-import CreateCollectionForm from '../components/CreateCollectionForm';
+import CreateCollectionForm from '../features/collections/CreateCollectionForm';
 
 const CreateCollectionPage: React.FC = () => {
     return (

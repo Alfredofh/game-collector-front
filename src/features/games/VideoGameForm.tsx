@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { searchGamesByName } from '../services/searchGamesIGDB';
-import Modal from './Modal';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { searchGamesByName } from '../../services/searchGamesIGDB';
+import Modal from '../../components/Modal';
+import { useNavigate } from 'react-router-dom';
 
 type FormState = {
     name: string;

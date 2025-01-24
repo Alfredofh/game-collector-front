@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { updateCollection } from "../services/collectionService";
+import { updateCollection } from "../../services/collectionService";
 
 // Tipos de las props que recibe el componente
 interface EditCollectionModalProps {

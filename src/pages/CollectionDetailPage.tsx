@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import CollectionDetail from '../components/collectionDetails';
+import CollectionDetail from '../features/collections/collectionDetails';
 import { useParams } from 'react-router-dom';
 
 const CollectionDetailPage: React.FC = () => {
