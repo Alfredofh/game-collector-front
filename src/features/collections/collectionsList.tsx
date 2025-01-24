@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { getCollections, deleteCollection } from "../services/collectionService";
+import { getCollections, deleteCollection } from "../../services/collectionService";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import Modal from "./Modal";
-import useModal from "../hooks/useModal";
+import Modal from "../../components/Modal";
+import useModal from "../../hooks/useModal";
 import EditCollectionModal from "./EditCollectionModal";
-import { useNotification } from "../contexts/NotificationContext";
+import { useNotification } from "../../contexts/NotificationContext";
 interface Collection {
     id: number;
     name: string;

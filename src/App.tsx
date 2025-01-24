@@ -1,12 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import RegisterForm from './components/RegisterForm';
-import LoginForm from './components/LoginForm';
+import LoginForm from './features/auth/LoginForm';
 import GlobalStyles from './styles/GlobalStyles';
-import Logout from './components/LogOut';
 import UserDashboard from './pages/UserDashboard';
 import { AuthProvider } from './contexts/authContext';
 import NavBar from './components/NavBar';
+import Logout from './features/auth/LogOut';
 import CreateCollectionPage from './pages/CreateCollectionPage';
 import SearchPage from './pages/BarcodeScannerPage';
 import CollectionsPage from './pages/CollectionsPage';

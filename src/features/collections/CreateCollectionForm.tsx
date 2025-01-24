@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { createCollection } from '../services/collectionService';
-import { useNotification } from '../contexts/NotificationContext';
+import { createCollection } from '../../services/collectionService';
+import { useNotification } from '../../contexts/NotificationContext';
 
 
 const CreateCollectionForm: React.FC = () => {

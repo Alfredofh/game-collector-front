@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import CollectionList from '../components/collectionsList';
+import CollectionList from '../features/collections/collectionsList';
 import { useAuth } from '../contexts/authContext';
 import { useNavigate } from 'react-router-dom';
 

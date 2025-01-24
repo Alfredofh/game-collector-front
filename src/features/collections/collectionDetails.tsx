@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { getCollectionById } from '../services/collectionService';
-import { deleteGame, updateGame } from '../services/gamesService';
-import { useAuth } from '../contexts/authContext';
+import { getCollectionById } from '../../services/collectionService';
+import { deleteGame, updateGame } from '../../services/gamesService';
+import { useAuth } from '../../contexts/authContext';
 import { useNavigate } from 'react-router-dom';
-import SearchByGameNameForm from './searchForm';
-import Modal from "./Modal";
-import useModal from "../hooks/useModal";
-import VideogameForm from './VideoGameForm';
-import { useNotification } from '../contexts/NotificationContext';
+import SearchByGameNameForm from '../../components/searchForm';
+import Modal from '../../components/Modal';
+import useModal from '../../hooks/useModal';
+import VideogameForm from '../games/VideoGameForm';
+import { useNotification } from '../../contexts/NotificationContext';
 interface CollectionDetailProps {
     collectionId: number;
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import VideogameForm from '../components/VideoGameForm';
+import VideogameForm from '../features/games/VideoGameForm';
 import { addGameToCollection } from '../services/gamesService';
 import { useAuth } from '../contexts/authContext';
 import { useParams } from 'react-router-dom';
