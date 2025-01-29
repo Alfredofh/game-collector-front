@@ -34,3 +34,14 @@ export const loginUser = async (userData: LoginUserData) => {
     }
 
 }
+
+// services/userServices.ts
+
+export const requestPasswordReset = async (email: string) => {
+    try {
+        const response = await axios.post('/api/auth/password-reset', { email });
+        return response.data;
+    } catch (error) {
+        throw new Error('Failed to request password reset');
+    }
+};
