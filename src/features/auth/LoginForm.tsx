@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../../services/userServices';
+import { loginUser, requestPasswordReset } from '../../services/userServices';
 import { useAuth } from '../../contexts/authContext';
+
 const LoginForm: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const { isAuthenticated, login } = useAuth();
     const [error, setError] = useState<string | null>(null);
+    const [message, setMessage] = useState<string | null>(null);
+    const [showReset, setShowReset] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -18,12 +21,10 @@ const LoginForm: React.FC = () => {
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-
         if (!email || !password) {
             setError('Please fill in all fields');
             return;
         }
-
         try {
             const response = await loginUser({ email, password });
             login(response.token);
@@ -33,36 +34,76 @@ const LoginForm: React.FC = () => {
         }
     };
 
+    const handlePasswordReset = async (event: React.FormEvent) => {
+        event.preventDefault();
+        if (!email) {
+            setError('Please enter your email to reset password');
+            return;
+        }
+        try {
+            await requestPasswordReset(email);
+            setMessage('If this email exists, a reset link has been sent.');
+            setError(null);
+        } catch (err: any) {
+            setError('Error requesting password reset');
+            console.error('Password reset error:', err);
+        }
+    };
 
     return (
         <FormContainer>
             <h2>User Login</h2>
-            <Form onSubmit={handleSubmit}>
-                <div>
-                    <Label htmlFor="email">Email:</Label>
+            {showReset ? (
+                <Form onSubmit={handlePasswordReset}>
+                    <Label htmlFor="reset-email">Enter your email:</Label>
                     <Input
                         type="email"
-                        id="email"
+                        id="reset-email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
-                </div>
-                <div>
-                    <Label htmlFor="password">Password:</Label>
-                    <Input
-                        type="password"
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                </div>
-                <Button type="submit">Login</Button>
-            </Form>
+                    <Button type="submit">Send Reset Link</Button>
+                    <Button type="button" onClick={() => setShowReset(false)}>Back to Login</Button>
+                </Form>
+            ) : (
+                <Form onSubmit={handleSubmit}>
+                    <div>
+                        <Label htmlFor="email">Email:</Label>
+                        <Input
+                            type="email"
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <Label htmlFor="password">Password:</Label>
+                        <Input
+                            type="password"
+                            id="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
+                    <Button type="submit">Login</Button>
+                    <ForgotPasswordLink onClick={() => setShowReset(true)}>Forgot password?</ForgotPasswordLink>
+                </Form>
+            )}
             {error && <Message>{error}</Message>}
+            {message && <Message success>{message}</Message>}
         </FormContainer>
     );
 };
 
+const ForgotPasswordLink = styled.p`
+    color: #1b9aaa;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 10px;
+    &:hover {
+        text-decoration: underline;
+    }
+`;
 
 const FormContainer = styled.div`
     display: flex;
