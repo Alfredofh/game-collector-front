@@ -39,7 +39,7 @@ export const loginUser = async (userData: LoginUserData) => {
 
 export const requestPasswordReset = async (email: string) => {
     try {
-        const response = await axios.post('/api/auth/password-reset', { email });
+        const response = await axios.post('/password-reset', { email });
         return response.data;
     } catch (error) {
         throw new Error('Failed to request password reset');
