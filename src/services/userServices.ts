@@ -35,8 +35,6 @@ export const loginUser = async (userData: LoginUserData) => {
 
 }
 
-// services/userServices.ts
-
 export const requestPasswordReset = async (email: string) => {
     try {
         const response = await axios.post('/password-reset', { email });
