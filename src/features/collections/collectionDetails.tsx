@@ -156,8 +156,11 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
                         <GameItem key={game.id}>
                             <GameName>{game.name}</GameName>
                             <GameDetails>
-                                {game.platform} - {game.release_year} -
+                                {Array.isArray(game.platform)
+                                    ? game.platform.map((p: any) => p.name).join(', ')
+                                    : game.platform} - {game.release_year} -
                             </GameDetails>
+
                             <ImageContainer>
                                 {game.image_url ? (
                                     <GameImage

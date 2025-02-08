@@ -45,7 +45,7 @@ const SearchByGameNameForm: React.FC<SearchByGameNameFormProps> = ({ collectionI
             // Construir el payload con los datos requeridos
             const payload = {
                 name: game.name,
-                platform: game.platforms?.map((p: any) => p.name).join(', ') || null,
+                platform: game.platforms?.map((p: any) => ({ name: p.name })) || [],
                 release_year: game.first_release_date
                     ? new Date(game.first_release_date * 1000).getFullYear()
                     : null,
