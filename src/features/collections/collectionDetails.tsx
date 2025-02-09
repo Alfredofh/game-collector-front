@@ -82,7 +82,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
         try {
             const payload = {
                 name: updatedGame.name,
-                platform: updatedGame.platform,
+                platform: updatedGame.platforms?.map((p: any) => ({ name: p.name })) || [],
                 release_year: updatedGame.release_year,
                 value: updatedGame.value,
                 upc: updatedGame.upc || null,
