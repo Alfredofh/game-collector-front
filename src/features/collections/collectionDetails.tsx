@@ -57,7 +57,6 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
 
     const handleEditGameClick = (game: any) => {
         setSelectedGame(game);
-        console.log("game", game);
 
         openModal(
             <VideogameForm
@@ -79,14 +78,13 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
     };
 
     const handleUpdateGame = async (gameId: number, updatedGame: any) => {
-        try {
-            console.log('updatedGame.platforms antes de mapear:', updatedGame.platforms);
 
+        try {
             const payload = {
                 name: updatedGame.name,
-                platform: Array.isArray(updatedGame.platforms) && updatedGame.platforms.length > 0
-                    ? updatedGame.platforms.map((p: any) => ({ id: p.id, name: p.name }))
-                    : [],  // Asegurar que no sea undefined
+                platform: Array.isArray(updatedGame.platform) && updatedGame.platform.length > 0
+                    ? updatedGame.platform.map((p: any) => ({ id: p.id, name: p.name }))
+                    : [],
                 release_year: updatedGame.release_year,
                 value: updatedGame.value,
                 upc: updatedGame.upc || null,
@@ -96,7 +94,6 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
                 collection_id: collection.id,
             };
 
-            console.log('Payload enviado:', payload); // Verifica si platform sigue vacío aquí
 
             const updatedGameFromAPI = await updateGame(gameId, payload, token!);
 

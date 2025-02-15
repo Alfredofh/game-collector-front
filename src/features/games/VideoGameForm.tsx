@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { searchGamesByName } from '../../services/searchGamesIGDB';
 import Modal from '../../components/Modal';
 import { useNavigate } from 'react-router-dom';
-
+import { useEffect } from 'react';
 type FormState = {
     name: string;
     platform: PlatformOption[];
@@ -48,16 +48,22 @@ const VideogameForm: React.FC<VideogameFormProps> = ({
             ...prevState,
             [name]: name === 'release_year' || name === 'value' ? Number(value) || null : value,
             ...(name === 'platform' && {
-                platform: platformOptions.filter(p => p.name === value) // Guarda siempre un array
+                platform: platformOptions.filter(p => p.name === value) // Guardar como array con un solo objeto
             })
         }));
     };
 
 
+    useEffect(() => {
+        if (isEdit) {
+            // Si es edición, usar las plataformas del juego en lugar de llamar a la API
+            setPlatformOptions(initialFormState.platform);
+        }
+    }, [isEdit, initialFormState.platform]);
 
 
     const handleNameBlur = async () => {
-        if (!formState.name) return;
+        if (!formState.name || isEdit) return;
         setIsLoading(true);
         setErrorMessage('');
 
@@ -70,13 +76,16 @@ const VideogameForm: React.FC<VideogameFormProps> = ({
             }
 
             setPlatformOptions(games[0].platforms?.map((p: any) => ({ id: p.id, name: p.name })) || []);
+
             setFormState((prevState) => ({
                 ...prevState,
                 release_year: games[0].first_release_date
                     ? new Date(games[0].first_release_date * 1000).getFullYear()
-                    : null,
-                description: games[0].summary || '',
-                image_url: games[0].cover?.url || '',
+                    : prevState.release_year,
+                description: games[0].summary || prevState.description,
+                image_url: games[0].cover?.url || prevState.image_url,
+                platform: prevState.platform.length > 0 ? prevState.platform :
+                    (games[0].platforms?.map((p: any) => ({ id: p.id, name: p.name })) || []),
             }));
         } catch (error: any) {
             setErrorMessage(error.message || 'Unexpected error occurred.');
@@ -88,8 +97,8 @@ const VideogameForm: React.FC<VideogameFormProps> = ({
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onSubmit(formState);
-        setIsModalOpen(true);
     };
+
 
     return (
         <FormContainer>
