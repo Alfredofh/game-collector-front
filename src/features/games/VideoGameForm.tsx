@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 type FormState = {
     name: string;
-    platform: string;
+    platform: PlatformOption[];
     release_year: number | null;
     value: number | null;
     upc: string;
@@ -43,11 +43,18 @@ const VideogameForm: React.FC<VideogameFormProps> = ({
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
         const { name, value } = e.target;
+
         setFormState((prevState) => ({
             ...prevState,
-            [name]: name === 'release_year' || name === 'value' ? Number(value) || '' : value,
+            [name]: name === 'release_year' || name === 'value' ? Number(value) || null : value,
+            ...(name === 'platform' && {
+                platform: platformOptions.filter(p => p.name === value) // Guarda siempre un array
+            })
         }));
     };
+
+
+
 
     const handleNameBlur = async () => {
         if (!formState.name) return;
@@ -104,7 +111,7 @@ const VideogameForm: React.FC<VideogameFormProps> = ({
                     <Select
                         id="platform"
                         name="platform"
-                        value={formState.platform}
+                        value={formState.platform.length > 0 ? formState.platform[0].name : ''}
                         onChange={handleChange}
                     >
                         <option value="">Select a platform</option>

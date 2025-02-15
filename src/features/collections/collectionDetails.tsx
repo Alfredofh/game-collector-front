@@ -82,7 +82,9 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
         try {
             const payload = {
                 name: updatedGame.name,
-                platform: updatedGame.platforms?.map((p: any) => ({ name: p.name })) || [],
+                platform: updatedGame.platforms && updatedGame.platforms.length > 0
+                    ? updatedGame.platforms.map((p: any) => ({ id: p.id, name: p.name }))
+                    : [],
                 release_year: updatedGame.release_year,
                 value: updatedGame.value,
                 upc: updatedGame.upc || null,
@@ -91,6 +93,8 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
                 image_url: updatedGame.image_url || '',
                 collection_id: collection.id,
             };
+
+            console.log('Payload enviado:', payload); // Verifica que `platform` tenga datos
 
             const updatedGameFromAPI = await updateGame(gameId, payload, token!);
 
@@ -107,6 +111,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
             addNotification('Error al actualizar el juego. Por favor, inténtalo de nuevo.', 'error');
         }
     };
+
 
 
 
