@@ -57,13 +57,12 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
 
     const handleEditGameClick = (game: any) => {
         setSelectedGame(game);
-        console.log("game", game);
 
         openModal(
             <VideogameForm
                 initialFormState={{
                     name: game.name,
-                    platform: game.platform,
+                    platform: game.platform ?? [],
                     release_year: game.release_year,
                     value: game.value || null,
                     upc: game.upc || '',
@@ -79,10 +78,13 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
     };
 
     const handleUpdateGame = async (gameId: number, updatedGame: any) => {
+
         try {
             const payload = {
                 name: updatedGame.name,
-                platform: updatedGame.platform,
+                platform: Array.isArray(updatedGame.platform) && updatedGame.platform.length > 0
+                    ? updatedGame.platform.map((p: any) => ({ id: p.id, name: p.name }))
+                    : [],
                 release_year: updatedGame.release_year,
                 value: updatedGame.value,
                 upc: updatedGame.upc || null,
@@ -91,6 +93,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
                 image_url: updatedGame.image_url || '',
                 collection_id: collection.id,
             };
+
 
             const updatedGameFromAPI = await updateGame(gameId, payload, token!);
 
@@ -107,6 +110,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
             addNotification('Error al actualizar el juego. Por favor, inténtalo de nuevo.', 'error');
         }
     };
+
 
 
 
@@ -151,14 +155,16 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
             <Title>{collection.name}</Title>
             <Description>Creada el: {new Date(collection.created_at).toLocaleDateString()}</Description>
             {collection.video_games && collection.video_games.length > 0 ? (
+
                 <GameList>
                     {collection.video_games.map((game: any) => (
                         <GameItem key={game.id}>
                             <GameName>{game.name}</GameName>
                             <GameDetails>
                                 {Array.isArray(game.platform)
-                                    ? game.platform.map((p: any) => p.name).join(', ')
-                                    : game.platform} - {game.release_year} -
+                                    ? game.platform.map((p: { name: string }) => p.name).join(', ')
+                                    : ''}
+                                - {game.release_year} -
                             </GameDetails>
 
                             <ImageContainer>

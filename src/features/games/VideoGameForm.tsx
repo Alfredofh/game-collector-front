@@ -3,10 +3,10 @@ import styled from 'styled-components';
 import { searchGamesByName } from '../../services/searchGamesIGDB';
 import Modal from '../../components/Modal';
 import { useNavigate } from 'react-router-dom';
-
+import { useEffect } from 'react';
 type FormState = {
     name: string;
-    platform: string;
+    platform: PlatformOption[];
     release_year: number | null;
     value: number | null;
     upc: string;
@@ -39,18 +39,46 @@ const VideogameForm: React.FC<VideogameFormProps> = ({
     const [errorMessage, setErrorMessage] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
+
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         const { name, value } = e.target;
+
         setFormState((prevState) => ({
             ...prevState,
-            [name]: name === 'release_year' || name === 'value' ? Number(value) || '' : value,
+            [name]: name === 'release_year' || name === 'value' ? Number(value) || null : value,
         }));
     };
 
+
+
+    const handleCheckboxChange = (
+        e: React.ChangeEvent<HTMLInputElement>,
+        selectedPlatform: PlatformOption
+    ) => {
+        setFormState((prevState) => {
+            const isChecked = e.target.checked;
+
+            const updatedPlatforms = isChecked
+                ? [...prevState.platform, selectedPlatform] // Agrega la plataforma si se selecciona
+                : prevState.platform.filter(p => p.id !== selectedPlatform.id); // Quita si se deselecciona
+
+            return { ...prevState, platform: updatedPlatforms };
+        });
+    };
+
+
+    useEffect(() => {
+        if (isEdit) {
+            // Si es edición, usar las plataformas del juego en lugar de llamar a la API
+            setPlatformOptions(initialFormState.platform);
+        }
+    }, [isEdit, initialFormState.platform]);
+
+
     const handleNameBlur = async () => {
-        if (!formState.name) return;
+        if (!formState.name || isEdit) return;
         setIsLoading(true);
         setErrorMessage('');
 
@@ -63,13 +91,16 @@ const VideogameForm: React.FC<VideogameFormProps> = ({
             }
 
             setPlatformOptions(games[0].platforms?.map((p: any) => ({ id: p.id, name: p.name })) || []);
+
             setFormState((prevState) => ({
                 ...prevState,
                 release_year: games[0].first_release_date
                     ? new Date(games[0].first_release_date * 1000).getFullYear()
-                    : null,
-                description: games[0].summary || '',
-                image_url: games[0].cover?.url || '',
+                    : prevState.release_year,
+                description: games[0].summary || prevState.description,
+                image_url: games[0].cover?.url || prevState.image_url,
+                platform: prevState.platform.length > 0 ? prevState.platform :
+                    (games[0].platforms?.map((p: any) => ({ id: p.id, name: p.name })) || []),
             }));
         } catch (error: any) {
             setErrorMessage(error.message || 'Unexpected error occurred.');
@@ -83,6 +114,7 @@ const VideogameForm: React.FC<VideogameFormProps> = ({
         onSubmit(formState);
         setIsModalOpen(true);
     };
+
 
     return (
         <FormContainer>
@@ -100,21 +132,33 @@ const VideogameForm: React.FC<VideogameFormProps> = ({
                     />
                 </div>
                 <div>
-                    <Label htmlFor="platform">Platform:</Label>
-                    <Select
-                        id="platform"
-                        name="platform"
-                        value={formState.platform}
-                        onChange={handleChange}
-                    >
-                        <option value="">Select a platform</option>
-                        {platformOptions.map((platform) => (
-                            <option key={platform.id} value={platform.name}>
-                                {platform.name}
-                            </option>
-                        ))}
-                    </Select>
+                    <Label>Plataforms:</Label>
+                    {platformOptions.map((platform) => (
+                        <CheckboxContainer key={platform.id}>
+                            {/* Checkbox oculto */}
+                            <HiddenCheckbox
+                                id={`platform-${platform.id}`}
+                                checked={formState.platform.some(p => p.id === platform.id)}
+                                onChange={(e) => handleCheckboxChange(e, platform)}
+                            />
+
+                            {/* Checkbox estilizado */}
+                            <StyledCheckbox
+                                checked={formState.platform.some(p => p.id === platform.id)}
+                                onClick={() =>
+                                    handleCheckboxChange(
+                                        { target: { checked: !formState.platform.some(p => p.id === platform.id) } } as any,
+                                        platform
+                                    )
+                                }
+                            />
+
+                            <label htmlFor={`platform-${platform.id}`}>{platform.name}</label>
+                        </CheckboxContainer>
+                    ))}
                 </div>
+
+
                 <div>
                     <Label htmlFor="release_year">Release Year:</Label>
                     <Input
@@ -205,16 +249,40 @@ const Input = styled.input`
     font-family: 'Roboto Mono', monospace;
 `;
 
-const Select = styled.select`
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 3px solid #000000;
-    background-color: #1e1e1e;
-    color: #ffffff;
-    box-shadow: 2px 2px #000000;
-    font-family: 'Roboto Mono', monospace;
+const CheckboxContainer = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
 `;
+
+const HiddenCheckbox = styled.input.attrs({ type: 'checkbox' })`
+    opacity: 0;
+    position: absolute;
+    width: 0;
+    height: 0;
+`;
+
+const StyledCheckbox = styled.div<{ checked: boolean }>`
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ff0d72;
+    border-radius: 1px; 
+    background: ${(props) => (props.checked ? "#ff0d72" : "transparent")};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s;
+
+    &:after {
+        content: "✔";
+        color: #ffffff;
+        font-size: 14px;
+        display: ${(props) => (props.checked ? "block" : "none")};
+    }
+`;
+
 
 const TextArea = styled.textarea`
     grid-column: span 2;
