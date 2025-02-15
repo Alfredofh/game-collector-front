@@ -63,7 +63,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
             <VideogameForm
                 initialFormState={{
                     name: game.name,
-                    platform: game.platform,
+                    platform: game.platform ?? [],
                     release_year: game.release_year,
                     value: game.value || null,
                     upc: game.upc || '',
@@ -80,11 +80,13 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
 
     const handleUpdateGame = async (gameId: number, updatedGame: any) => {
         try {
+            console.log('updatedGame.platforms antes de mapear:', updatedGame.platforms);
+
             const payload = {
                 name: updatedGame.name,
-                platform: updatedGame.platforms && updatedGame.platforms.length > 0
+                platform: Array.isArray(updatedGame.platforms) && updatedGame.platforms.length > 0
                     ? updatedGame.platforms.map((p: any) => ({ id: p.id, name: p.name }))
-                    : [],
+                    : [],  // Asegurar que no sea undefined
                 release_year: updatedGame.release_year,
                 value: updatedGame.value,
                 upc: updatedGame.upc || null,
@@ -94,7 +96,7 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
                 collection_id: collection.id,
             };
 
-            console.log('Payload enviado:', payload); // Verifica que `platform` tenga datos
+            console.log('Payload enviado:', payload); // Verifica si platform sigue vacío aquí
 
             const updatedGameFromAPI = await updateGame(gameId, payload, token!);
 
