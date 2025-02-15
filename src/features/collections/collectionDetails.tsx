@@ -151,14 +151,16 @@ const CollectionDetail: React.FC<CollectionDetailProps> = ({ collectionId }) => 
             <Title>{collection.name}</Title>
             <Description>Creada el: {new Date(collection.created_at).toLocaleDateString()}</Description>
             {collection.video_games && collection.video_games.length > 0 ? (
+
                 <GameList>
                     {collection.video_games.map((game: any) => (
                         <GameItem key={game.id}>
                             <GameName>{game.name}</GameName>
                             <GameDetails>
                                 {Array.isArray(game.platform)
-                                    ? game.platform.map((p: any) => p.name).join(', ')
-                                    : game.platform} - {game.release_year} -
+                                    ? game.platform.map((p: { name: string }) => p.name).join(', ')
+                                    : ''}
+                                - {game.release_year} -
                             </GameDetails>
 
                             <ImageContainer>
