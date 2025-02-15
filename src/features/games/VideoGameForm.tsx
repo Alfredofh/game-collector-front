@@ -41,26 +41,31 @@ const VideogameForm: React.FC<VideogameFormProps> = ({
     const navigate = useNavigate();
 
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         const { name, value } = e.target;
 
-        if (name === "platform") {
-            const selectElement = e.target as HTMLSelectElement;
-            const selectedPlatforms = Array.from(selectElement.selectedOptions)
-                .map(option => platformOptions.find(p => p.name === option.value)!)
-                .filter(Boolean);
+        setFormState((prevState) => ({
+            ...prevState,
+            [name]: name === 'release_year' || name === 'value' ? Number(value) || null : value,
+        }));
+    };
 
-            setFormState((prevState) => ({
-                ...prevState,
-                platform: selectedPlatforms,
-            }));
-        } else {
-            setFormState((prevState) => ({
-                ...prevState,
-                [name]: name === 'release_year' || name === 'value' ? Number(value) || null : value,
-            }));
-        }
+
+
+    const handleCheckboxChange = (
+        e: React.ChangeEvent<HTMLInputElement>,
+        selectedPlatform: PlatformOption
+    ) => {
+        setFormState((prevState) => {
+            const isChecked = e.target.checked;
+
+            const updatedPlatforms = isChecked
+                ? [...prevState.platform, selectedPlatform] // Agrega la plataforma si se selecciona
+                : prevState.platform.filter(p => p.id !== selectedPlatform.id); // Quita si se deselecciona
+
+            return { ...prevState, platform: updatedPlatforms };
+        });
     };
 
 
@@ -107,6 +112,7 @@ const VideogameForm: React.FC<VideogameFormProps> = ({
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onSubmit(formState);
+        setIsModalOpen(true);
     };
 
 
@@ -126,22 +132,33 @@ const VideogameForm: React.FC<VideogameFormProps> = ({
                     />
                 </div>
                 <div>
-                    <Label htmlFor="platform">Platform:</Label>
-                    <Select
-                        id="platform"
-                        name="platform"
-                        multiple // Habilita selección múltiple
-                        value={formState.platform.map(p => p.name)}
-                        onChange={handleChange}
-                    >
-                        {platformOptions.map((platform) => (
-                            <option key={platform.id} value={platform.name}>
-                                {platform.name}
-                            </option>
-                        ))}
-                    </Select>
+                    <Label>Plataforms:</Label>
+                    {platformOptions.map((platform) => (
+                        <CheckboxContainer key={platform.id}>
+                            {/* Checkbox oculto */}
+                            <HiddenCheckbox
+                                id={`platform-${platform.id}`}
+                                checked={formState.platform.some(p => p.id === platform.id)}
+                                onChange={(e) => handleCheckboxChange(e, platform)}
+                            />
 
+                            {/* Checkbox estilizado */}
+                            <StyledCheckbox
+                                checked={formState.platform.some(p => p.id === platform.id)}
+                                onClick={() =>
+                                    handleCheckboxChange(
+                                        { target: { checked: !formState.platform.some(p => p.id === platform.id) } } as any,
+                                        platform
+                                    )
+                                }
+                            />
+
+                            <label htmlFor={`platform-${platform.id}`}>{platform.name}</label>
+                        </CheckboxContainer>
+                    ))}
                 </div>
+
+
                 <div>
                     <Label htmlFor="release_year">Release Year:</Label>
                     <Input
@@ -232,16 +249,40 @@ const Input = styled.input`
     font-family: 'Roboto Mono', monospace;
 `;
 
-const Select = styled.select`
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 3px solid #000000;
-    background-color: #1e1e1e;
-    color: #ffffff;
-    box-shadow: 2px 2px #000000;
-    font-family: 'Roboto Mono', monospace;
+const CheckboxContainer = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
 `;
+
+const HiddenCheckbox = styled.input.attrs({ type: 'checkbox' })`
+    opacity: 0;
+    position: absolute;
+    width: 0;
+    height: 0;
+`;
+
+const StyledCheckbox = styled.div<{ checked: boolean }>`
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ff0d72;
+    border-radius: 1px; 
+    background: ${(props) => (props.checked ? "#ff0d72" : "transparent")};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s;
+
+    &:after {
+        content: "✔";
+        color: #ffffff;
+        font-size: 14px;
+        display: ${(props) => (props.checked ? "block" : "none")};
+    }
+`;
+
 
 const TextArea = styled.textarea`
     grid-column: span 2;
