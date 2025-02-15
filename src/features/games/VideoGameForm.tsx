@@ -39,18 +39,28 @@ const VideogameForm: React.FC<VideogameFormProps> = ({
     const [errorMessage, setErrorMessage] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
+
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
         const { name, value } = e.target;
 
-        setFormState((prevState) => ({
-            ...prevState,
-            [name]: name === 'release_year' || name === 'value' ? Number(value) || null : value,
-            ...(name === 'platform' && {
-                platform: platformOptions.filter(p => p.name === value) // Guardar como array con un solo objeto
-            })
-        }));
+        if (name === "platform") {
+            const selectElement = e.target as HTMLSelectElement;
+            const selectedPlatforms = Array.from(selectElement.selectedOptions)
+                .map(option => platformOptions.find(p => p.name === option.value)!)
+                .filter(Boolean);
+
+            setFormState((prevState) => ({
+                ...prevState,
+                platform: selectedPlatforms,
+            }));
+        } else {
+            setFormState((prevState) => ({
+                ...prevState,
+                [name]: name === 'release_year' || name === 'value' ? Number(value) || null : value,
+            }));
+        }
     };
 
 
@@ -120,16 +130,17 @@ const VideogameForm: React.FC<VideogameFormProps> = ({
                     <Select
                         id="platform"
                         name="platform"
-                        value={formState.platform.length > 0 ? formState.platform[0].name : ''}
+                        multiple // Habilita selección múltiple
+                        value={formState.platform.map(p => p.name)}
                         onChange={handleChange}
                     >
-                        <option value="">Select a platform</option>
                         {platformOptions.map((platform) => (
                             <option key={platform.id} value={platform.name}>
                                 {platform.name}
                             </option>
                         ))}
                     </Select>
+
                 </div>
                 <div>
                     <Label htmlFor="release_year">Release Year:</Label>
